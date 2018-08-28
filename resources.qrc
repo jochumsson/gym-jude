@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="gym_gui.jpg">images/gym_gui.jpg</file>
+    </qresource>
+</RCC>
