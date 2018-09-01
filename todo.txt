@@ -1,0 +1,1 @@
+1) Create parameter "Competition Type" where it is possible to select Svenska Stegserien or Svensk Pokalserie. Do not provide level for Svensk Pokalserie and calculate the jumps according to the Svensk Pokalserien.

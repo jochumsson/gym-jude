@@ -26,6 +26,7 @@ public:
 
 protected:
     void showEvent(QShowEvent *e) final;
+    void keyPressEvent(QKeyEvent *key_event) final;
 
 private slots:    
     void init_level_combo_box(bool);

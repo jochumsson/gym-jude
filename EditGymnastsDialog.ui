@@ -62,13 +62,20 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QCheckBox" name="filterByLevelCheckBox">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Filter by Level</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="levelComboBox"/>
+          <widget class="QComboBox" name="levelComboBox">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -90,6 +97,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="addGymnastPushButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Add Gymnast</string>
          </property>
@@ -97,6 +107,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="deleteGymnastPushButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Delete Gymnast</string>
          </property>
@@ -156,6 +169,9 @@
           <widget class="QLineEdit" name="gymnastIdLineEdit">
            <property name="enabled">
             <bool>false</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
            </property>
           </widget>
          </item>
@@ -294,6 +310,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="closePushButton">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
            <property name="text">
             <string>Close</string>
            </property>

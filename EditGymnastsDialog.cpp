@@ -3,6 +3,7 @@
 
 #include <QMessageBox>
 #include <QUuid>
+#include <QKeyEvent>
 #include <QDebug>
 
 EditGymnastsDialog::EditGymnastsDialog(
@@ -45,6 +46,15 @@ void EditGymnastsDialog::showEvent(QShowEvent *e)
 {
     reinitialize();
     super::showEvent(e);
+}
+
+void EditGymnastsDialog::keyPressEvent(QKeyEvent *key_event)
+{
+    if (key_event->key() == Qt::Key_Return)
+    {
+        // if the return button is pressed then move the focus to the next sibling
+        focusNextChild();
+    }
 }
 
 void EditGymnastsDialog::init_level_combo_box(bool enabled)
