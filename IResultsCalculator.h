@@ -2,6 +2,7 @@
 
 #include "GymnastResults.h"
 #include "TeamResults.h"
+#include "IResultTypeModel.h"
 #include "CompetitionInfo.h"
 #include <map>
 #include <memory>
@@ -18,11 +19,13 @@ public:
     virtual ResultsMap calculate_results(
             const CompetitionInfo & competition_info,
             int level,
-            const QString & result_type) = 0;
+            const ResultType result_type) = 0;
 
     using TeamResultsMap = std::multimap< double, TeamResults, std::greater<double> >;
 
-    virtual TeamResultsMap calculate_team_results(const CompetitionInfo & competition_info) = 0;
+    virtual TeamResultsMap calculate_team_results(
+            const CompetitionInfo & competition_info,
+            const ResultType result_type) = 0;
 
 };
 

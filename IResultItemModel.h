@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CompetitionInfo.h"
+#include "IResultTypeModel.h"
 #include "IResultsCalculator.h"
 #include <QAbstractItemModel>
 #include <memory>
@@ -28,7 +29,7 @@ public:
 
     virtual void set_level(int level) = 0;
 
-    virtual void set_result_type(const QString & result_type) = 0;
+    virtual void set_result_type(const ResultTypeInfo & result_type) = 0;
 
     virtual void set_show_score_details(bool show_score_details) = 0;
 

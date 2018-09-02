@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
     // create main window
     auto competition_model = std::make_shared<CompetitionSqlModel>(db);
     auto score_sql_table_model = std::make_shared<ScoreSqlTableModel>(db);
-    auto results_calculator = std::make_shared<ResultsSqlCalculator>(db);
+    auto result_type_sql_model = std::make_shared<ResultTypeSqlModel>(db);
+    auto results_calculator = std::make_shared<ResultsSqlCalculator>(db, result_type_sql_model);
     MainWindow main_window(
                 competition_model,
                 std::make_shared<CompetitionSqlTableModel>(db),
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
                 std::make_shared<JudgeSqlTableModel>(db),
                 std::make_shared<JudgementSqlModel>(db),
                 score_sql_table_model,
-                std::make_shared<ResultTypeSqlModel>(db),
+                result_type_sql_model,
                 std::make_shared<ResultSqlItemModel>(db, results_calculator),
                 std::make_shared<TeamResultSqlItemModel>(results_calculator),
                 std::make_shared<RawSqlDataModel>(db));

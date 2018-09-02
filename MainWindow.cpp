@@ -651,9 +651,9 @@ void MainWindow::show_score_details_changed()
 
 void MainWindow::result_type_changed()
 {
-    const QVariant & result_type =
+    const auto & result_type =
             m_result_type_model->get_result_type(ui->results_type_comboBox->currentIndex());
-    m_result_item_model->set_result_type(result_type.toString());
+    m_result_item_model->set_result_type(result_type);
     m_result_item_model->refresh();
 
     update_results_tab();

@@ -12,7 +12,7 @@ static const QString JUMP_2_NAME = "Jump 2";
 IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
         const CompetitionInfo & competition_info,
         int level,
-        const QString & result_type)
+        const ResultType result_type)
 {
     ResultsMap results_map;
 
@@ -23,6 +23,7 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
     gymnast_query.bindValue(":level_bind_value", level);
     gymnast_query.exec();
 
+    ResultTypeInfo result_type_info = m_result_type_model->get_result_type_info(result_type);
     while(gymnast_query.next())
     {
         GymnastResults gymnast_results;
@@ -38,7 +39,7 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
                                     "AND apparatus IN(SELECT apparatus FROM result WHERE result_type=:result_type_bind_value)");
         gymnast_score_query.bindValue(":competition_name_bind_value", competition_info.name);
         gymnast_score_query.bindValue(":gymnast_id_bind_value", gymnast_results.gymnast_id);
-        gymnast_score_query.bindValue(":result_type_bind_value", result_type);
+        gymnast_score_query.bindValue(":result_type_bind_value", result_type_info.result_type_string);
         gymnast_score_query.exec();
 
         bool add_jump_to_final_score = false;
@@ -82,20 +83,23 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
                 const double jump_score =
                         (jump_1_score->second.final_score + jump_2_score->second.final_score) / static_cast<double>(2);
                 gymnast_results.apparatus_score[JUMP_NAME] = {jump_score, false, 0.0, 0.0, 0.0};
-
-                if (level > 10 && gymnast_results.apparatus_score.size() > 3)
-                {
-                    // if not pokalen and we are calculating score for multiple apparatus then only the first jump counts
-                    gymnast_results.final_results += jump_1_score->second.final_score;
-                }
-                else
-                {
-                    gymnast_results.final_results += jump_score;
-                }
             }
             else
             {
                 gymnast_results.apparatus_score[JUMP_NAME] = {0.0, false, 0.0, 0.0, 0.0};
+            }
+
+
+            if (level > 10 &&
+                    result_type_info.result_type == ResultType::AllArround)
+            {
+                // todo: "change level > 10" with competition_info.competition_type == SvenskPokalserie
+                // if not pokalen and we are calculating score for multiple apparatus then only the first jump counts
+                gymnast_results.final_results += jump_1_score->second.final_score;
+            }
+            else
+            {
+                gymnast_results.final_results += gymnast_results.apparatus_score[JUMP_NAME].final_score;
             }
         }
 
@@ -107,13 +111,15 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
 
 
 ResultsSqlCalculator::TeamResultsMap
-ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition_info)
+ResultsSqlCalculator::calculate_team_results(
+        const CompetitionInfo & competition_info,
+        const ResultType result_type)
 {
     // add all indevidual results to correct team results
     std::multimap< QString, TeamResults > team_results;
     for (int level = 1; level < 12; ++level)
     {
-        const auto & competition_level_results = calculate_results(competition_info, level, "WAG All Arround");
+        const auto & competition_level_results = calculate_results(competition_info, level, result_type);
         for(auto indevidual_results: competition_level_results)
         {
             if (indevidual_results.second.gymnast_team.isEmpty())

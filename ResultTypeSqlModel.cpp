@@ -38,14 +38,24 @@ void ResultTypeSqlModel::refresh()
             continue;
         }
 
-        if (m_selected_level > 4 || is_all_arround(field.value().toString()))
+        const QString result_type_string = field.value().toString();
+        const ResultType result_type = result_type_from_string(result_type_string);
+        if (m_selected_level > 4 ||
+                result_type == ResultType::AllArround)
         {
             // level < 5 only support all arround competitions
-            m_level_result_types.push_back(field.value());
+            m_level_result_types.push_back({result_type, result_type_string});
         }
     }
 
     endResetModel();
+}
+
+ResultTypeInfo ResultTypeSqlModel::get_result_type(int index) const
+{
+    if ((unsigned int)index < m_level_result_types.size())
+        return m_level_result_types[index];
+    return {};
 }
 
 void ResultTypeSqlModel::set_level(int level)
@@ -53,11 +63,9 @@ void ResultTypeSqlModel::set_level(int level)
     m_selected_level = level;
 }
 
-QVariant ResultTypeSqlModel::get_result_type(int index)
+ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const ResultType result_type) const
 {
-    if ((unsigned int)index < m_level_result_types.size())
-        return m_level_result_types[index];
-    return QString();
+    return {result_type, string_from_result_type(result_type)};
 }
 
 int ResultTypeSqlModel::rowCount(const QModelIndex &) const
@@ -77,32 +85,59 @@ QVariant ResultTypeSqlModel::data(const QModelIndex &index, int role) const
 
     if ((unsigned int)index.row() < m_level_result_types.size())
     {
-        const QVariant & result_type_variant = m_level_result_types[index.row()];
-        return m_translator.translate(result_type_variant.toString());
+        const auto & result_type_str = m_level_result_types[index.row()].result_type_string;
+        return m_translator.translate(result_type_str);
     }
 
     return QVariant();
 }
 
-bool ResultTypeSqlModel::is_all_arround(const QVariant & result_type) const
+ResultType ResultTypeSqlModel::result_type_from_string(const QString & result_type_string)
 {
-    QSqlQuery sql_query(m_db);
-    sql_query.prepare("SELECT COUNT(result_type) FROM result "
-                      "WHERE result_type=:result_type_bind_value");
-    sql_query.bindValue(":result_type_bind_value", result_type);
-    if (not sql_query.exec())
+    if (result_type_string == "Balance Beam")
     {
-        qWarning() << "is_all_arround query failed with error: " << sql_query.lastError().text();
+        return ResultType::BalanceBeam;
+    }
+    else if (result_type_string == "Floor")
+    {
+        return ResultType::Floor;
+    }
+    else if (result_type_string == "Jump")
+    {
+        return ResultType::Jump;
+    }
+    else if (result_type_string == "Uneven Bars")
+    {
+        return ResultType::UnevenBars;
+    }
+    else if (result_type_string == "WAG All Arround")
+    {
+        return ResultType::AllArround;
+    }
+    else
+    {
+        qWarning() << "Undefined result type: " << result_type_string;
+        return ResultType::Unknown;
+    }
+}
+
+QString ResultTypeSqlModel::string_from_result_type(const ResultType result_type)
+{
+    switch(result_type)
+    {
+    case ResultType::BalanceBeam:
+        return "Balance Beam";
+    case ResultType::Floor:
+        return "Floor";
+    case ResultType::Jump:
+        return "Jump";
+    case ResultType::UnevenBars:
+        return "Uneven Bars";
+    case ResultType::AllArround:
+        return "WAG All Arround";
+    case ResultType::Unknown:
+        return "";
     }
 
-    if (sql_query.next())
-    {
-        const auto & field = sql_query.record().field(0);
-        if (not field.isNull() && field.isValid())
-        {
-            return (field.value().toInt() > 2);
-        }
-    }
-
-    return false;
+    return "";
 }

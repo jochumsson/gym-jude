@@ -28,9 +28,9 @@ void ResultSqlItemModel::set_level(int level)
     m_current_level = level;
 }
 
-void ResultSqlItemModel::set_result_type(const QString & result_type)
+void ResultSqlItemModel::set_result_type(const ResultTypeInfo & result_type)
 {
-    m_result_type = result_type;
+    m_result_type_info = result_type;
 }
 
 void ResultSqlItemModel::set_show_score_details(bool show_score_details)
@@ -74,7 +74,7 @@ void ResultSqlItemModel::publish_results() const
 
             stream << "("
                    << "\"" << (*m_current_competition).name << "\","
-                   << "\"" << m_result_type << "\","
+                   << "\"" << m_result_type_info.result_type_string << "\","
                    << m_current_level << ","
                    << pos << ","
                    << "\"" << result.second.gymnast_id << "\","
@@ -92,7 +92,9 @@ void ResultSqlItemModel::publish_results() const
 
 void ResultSqlItemModel::remove_publication() const
 {
-    if (not m_current_competition || m_current_level < 0  || m_result_type.isEmpty())
+    if (not m_current_competition ||
+            m_current_level < 0  ||
+            m_result_type_info.result_type == ResultType::Unknown)
         return;
 
     QSqlQuery query(m_db);
@@ -101,7 +103,7 @@ void ResultSqlItemModel::remove_publication() const
                   "AND result_type=:result_type_bind_value "
                   "AND level=:level_bind_value");
     query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
-    query.bindValue(":result_type_bind_value", m_result_type);
+    query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
     query.bindValue(":level_bind_value", m_current_level);
 
     if (not query.exec())
@@ -120,7 +122,7 @@ bool ResultSqlItemModel::is_results_published() const
                       "AND result_type=:result_type_bind_value "
                       "AND level=:level_bind_value");
     sql_query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
-    sql_query.bindValue(":result_type_bind_value", m_result_type);
+    sql_query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
     sql_query.bindValue(":level_bind_value", m_current_level);
 
     if (not sql_query.exec())
@@ -150,7 +152,7 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
                       "AND level=:level_bind_value "
                       "ORDER BY final_score");
     sql_query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
-    sql_query.bindValue(":result_type_bind_value", m_result_type);
+    sql_query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
     sql_query.bindValue(":level_bind_value", m_current_level);
 
     if (not sql_query.exec())
@@ -194,12 +196,18 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
 
 void ResultSqlItemModel::update_results()
 {
-    if (not m_current_competition || m_current_level < 0 || m_result_type.isEmpty() ) {
+    if (not m_current_competition ||
+            m_current_level < 0 ||
+            m_result_type_info.result_type == ResultType::Unknown ) {
         qDebug() << "Failed to update results with incomplete selections";
         return;
     }
 
-    m_current_results = m_results_calculator->calculate_results(*m_current_competition, m_current_level, m_result_type);
+    m_current_results =
+            m_results_calculator->calculate_results(
+                *m_current_competition,
+                m_current_level,
+                m_result_type_info.result_type);
     m_model.clear();
     for (ResultsMap::iterator it = (*m_current_results).begin(); it != (*m_current_results).end(); ++it)
     {

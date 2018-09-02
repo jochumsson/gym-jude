@@ -18,20 +18,23 @@ public:
 
     void refresh() final;
 
+    ResultTypeInfo get_result_type(int index) const final;
+
     void set_level(int level) final;
 
-    QVariant get_result_type(int index) final;
+    ResultTypeInfo get_result_type_info(const ResultType result_type) const final;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const final;
     int columnCount(const QModelIndex &parent = QModelIndex()) const final;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;
 
 private:
-    bool is_all_arround(const QVariant & result_type) const;
+    static ResultType result_type_from_string(const QString & result_type_string);
+    static QString string_from_result_type(const ResultType result_type);
 
     QSqlDatabase & m_db;
     Translator m_translator;
-    std::vector<QVariant> m_level_result_types;
+    std::vector<ResultTypeInfo> m_level_result_types;
     int m_selected_level = -1;
 
 };

@@ -6,19 +6,21 @@
 class ResultsSqlCalculator : public IResultsCalculator
 {
 public:
-    explicit ResultsSqlCalculator(QSqlDatabase & db) :
-        m_db(db)
+    explicit ResultsSqlCalculator(QSqlDatabase & db, const IResultTypeModelPtr & result_type_model) :
+        m_db(db),
+        m_result_type_model(result_type_model)
     {
     }
 
-    ResultsMap calculate_results(
-            const CompetitionInfo & competition_info,
+    ResultsMap calculate_results(const CompetitionInfo & competition_info,
             int level,
-            const QString & result_type) final;
+            const ResultType result_type) final;
 
-    TeamResultsMap calculate_team_results(const CompetitionInfo & competition_info) final;
+    TeamResultsMap calculate_team_results(
+            const CompetitionInfo & competition_info,
+            const ResultType result_type) final;
 
 private:
     QSqlDatabase & m_db;
-
+    IResultTypeModelPtr m_result_type_model;
 };
