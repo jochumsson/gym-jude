@@ -185,21 +185,37 @@ void EditGymnastsDialog::add_gymnast()
 
 void EditGymnastsDialog::reinitialize()
 {
-    CompetitionInfo current_competition_info;
-    if (not m_competition_model->get_competition_info(current_competition_info))
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
     {
         qWarning() << "Initializing EditGymantsDialog without competition selection";
         return;
     }
 
-    m_level_table_model->set_competition(current_competition_info.name);
+    m_level_table_model->set_competition(competition_info.name);
     init_level_combo_box();
 
-    m_gymnast_table_model->set_competition(current_competition_info.name);
+    m_gymnast_table_model->set_competition(competition_info.name);
     init_gymnast_table_model();
 
-    m_gymnast_model->set_competition(current_competition_info.name);
+    m_gymnast_model->set_competition(competition_info.name);
     clear_gymnast_selection();
+
+    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    {
+        ui->filterByLevelCheckBox->show();
+        ui->levelComboBox->show();
+        ui->gymnastLevelLabel->show();
+        ui->gymnastLevelSpinBox->show();
+    }
+    else
+    {
+        ui->filterByLevelCheckBox->hide();
+        ui->levelComboBox->hide();
+        ui->gymnastLevelLabel->hide();
+        ui->gymnastLevelSpinBox->hide();
+    }
+
 }
 
 void EditGymnastsDialog::init_level_combo_box()

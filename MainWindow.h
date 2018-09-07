@@ -145,7 +145,7 @@ private:
     void init_enabled_state();
 
     //gui update
-    void update_score_level_gui();
+    void update_judge_gui();
     void update_results_publish_gui();
 
     void print_table_model(QAbstractItemModel *item_model);

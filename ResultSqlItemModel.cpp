@@ -93,18 +93,29 @@ void ResultSqlItemModel::publish_results() const
 void ResultSqlItemModel::remove_publication() const
 {
     if (not m_current_competition ||
-            m_current_level < 0  ||
-            m_result_type_info.result_type == ResultType::Unknown)
+            m_result_type_info.result_type == ResultType::Unknown ||
+            ((*m_current_competition).type == CompetitionType::SvenskaStegserierna && m_current_level < 0 ))
         return;
 
     QSqlQuery query(m_db);
-    query.prepare("DELETE FROM competition_result "
-                  "WHERE competition_name=:competition_name_bind_value "
-                  "AND result_type=:result_type_bind_value "
-                  "AND level=:level_bind_value");
-    query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
-    query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
-    query.bindValue(":level_bind_value", m_current_level);
+    if ((*m_current_competition).type == CompetitionType::SvenskaStegserierna)
+    {
+        query.prepare("DELETE FROM competition_result "
+                      "WHERE competition_name=:competition_name_bind_value "
+                      "AND result_type=:result_type_bind_value "
+                      "AND level=:level_bind_value");
+        query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
+        query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
+        query.bindValue(":level_bind_value", m_current_level);
+    }
+    else
+    {
+        query.prepare("DELETE FROM competition_result "
+                      "WHERE competition_name=:competition_name_bind_value "
+                      "AND result_type=:result_type_bind_value");
+        query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
+        query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
+    }
 
     if (not query.exec())
     {
@@ -203,10 +214,16 @@ void ResultSqlItemModel::update_results()
         return;
     }
 
+    boost::optional<int> level;
+    if ((*m_current_competition).type == CompetitionType::SvenskaStegserierna)
+    {
+        level = m_current_level;
+    }
+
     m_current_results =
             m_results_calculator->calculate_results(
                 *m_current_competition,
-                m_current_level,
+                level,
                 m_result_type_info.result_type);
     m_model.clear();
     for (ResultsMap::iterator it = (*m_current_results).begin(); it != (*m_current_results).end(); ++it)

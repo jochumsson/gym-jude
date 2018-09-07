@@ -13,7 +13,7 @@ public:
     }
 
     ResultsMap calculate_results(const CompetitionInfo & competition_info,
-            int level,
+            const boost::optional<int> & level,
             const ResultType result_type) final;
 
     TeamResultsMap calculate_team_results(

@@ -222,7 +222,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
-          <widget class="QLabel" name="label_7">
+          <widget class="QLabel" name="gymnastLevelLabel">
            <property name="text">
             <string>Level:</string>
            </property>

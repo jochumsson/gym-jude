@@ -3,6 +3,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QDebug>
+#include <boost/optional.hpp>
 #include <set>
 
 static const QString JUMP_NAME = "Jump";
@@ -11,16 +12,25 @@ static const QString JUMP_2_NAME = "Jump 2";
 
 IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
         const CompetitionInfo & competition_info,
-        int level,
+        const boost::optional<int> & level,
         const ResultType result_type)
 {
     ResultsMap results_map;
 
     QSqlQuery gymnast_query(m_db);
-    gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
-                          "WHERE competition_name=:competition_name_bind_value AND level=:level_bind_value");
-    gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
-    gymnast_query.bindValue(":level_bind_value", level);
+    if (level)
+    {
+        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
+                              "WHERE competition_name=:competition_name_bind_value AND level=:level_bind_value");
+        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
+        gymnast_query.bindValue(":level_bind_value", *level);
+    }
+    else
+    {
+        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
+                              "WHERE competition_name=:competition_name_bind_value");
+        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
+    }
     gymnast_query.exec();
 
     ResultTypeInfo result_type_info = m_result_type_model->get_result_type_info(result_type);
@@ -48,7 +58,7 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
             const QString & apparatus = gymnast_score_query.record().field(0).value().toString();
             const double final_score = gymnast_score_query.record().field(1).value().toDouble();
 
-            if (level > 4)
+            if (level == boost::none || *level > 4)
             {
                 const double d_score = gymnast_score_query.record().field(2).value().toDouble();
                 const double d_penalty = gymnast_score_query.record().field(3).value().toDouble();
@@ -90,11 +100,10 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
             }
 
 
-            if (level > 10 &&
+            if (competition_info.type == CompetitionType::SvenskaPokalenserierna &&
                     result_type_info.result_type == ResultType::AllArround)
             {
-                // todo: "change level > 10" with competition_info.competition_type == SvenskPokalserie
-                // if not pokalen and we are calculating score for multiple apparatus then only the first jump counts
+                // if pokalen and we are calculating score for multiple apparatus then only the first jump counts
                 gymnast_results.final_results += jump_1_score->second.final_score;
             }
             else
@@ -117,38 +126,35 @@ ResultsSqlCalculator::calculate_team_results(
 {
     // add all indevidual results to correct team results
     std::multimap< QString, TeamResults > team_results;
-    for (int level = 1; level < 12; ++level)
+    const auto & competition_level_results = calculate_results(competition_info, boost::none, result_type);
+    for(auto indevidual_results: competition_level_results)
     {
-        const auto & competition_level_results = calculate_results(competition_info, level, result_type);
-        for(auto indevidual_results: competition_level_results)
+        if (indevidual_results.second.gymnast_team.isEmpty())
         {
-            if (indevidual_results.second.gymnast_team.isEmpty())
-            {
-                qDebug() << "Gymnast "
-                         << indevidual_results.second.gymnast_name
-                         << " is not included in any team in the team competition "
-                         << competition_info.name;
-                continue;
-            }
-
-            // gymnast team
-            const QString gymnast_team = indevidual_results.second.gymnast_team.trimmed();
-
-            // find team
-            auto it = team_results.find(gymnast_team);
-
-            //if not found create
-            if (it == team_results.end())
-            {
-                TeamResults team_result;
-                team_result.team_name = gymnast_team;
-                team_result.team_club = indevidual_results.second.gymnast_club.trimmed();
-                it = team_results.insert(std::make_pair(gymnast_team, team_result));
-            }
-
-            //add indevidual results to team results
-            it->second.gymnast_results.push_back(indevidual_results.second);
+            qDebug() << "Gymnast "
+                     << indevidual_results.second.gymnast_name
+                     << " is not included in any team in the team competition "
+                     << competition_info.name;
+            continue;
         }
+
+        // gymnast team
+        const QString gymnast_team = indevidual_results.second.gymnast_team.trimmed();
+
+        // find team
+        auto it = team_results.find(gymnast_team);
+
+        //if not found create
+        if (it == team_results.end())
+        {
+            TeamResults team_result;
+            team_result.team_name = gymnast_team;
+            team_result.team_club = indevidual_results.second.gymnast_club.trimmed();
+            it = team_results.insert(std::make_pair(gymnast_team, team_result));
+        }
+
+        //add indevidual results to team results
+        it->second.gymnast_results.push_back(indevidual_results.second);
     }
 
     // update the team results final score

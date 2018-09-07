@@ -4,6 +4,7 @@
 #include "TeamResults.h"
 #include "IResultTypeModel.h"
 #include "CompetitionInfo.h"
+#include <boost/optional.hpp>
 #include <map>
 #include <memory>
 
@@ -18,7 +19,7 @@ public:
 
     virtual ResultsMap calculate_results(
             const CompetitionInfo & competition_info,
-            int level,
+            const boost::optional<int> & level,
             const ResultType result_type) = 0;
 
     using TeamResultsMap = std::multimap< double, TeamResults, std::greater<double> >;

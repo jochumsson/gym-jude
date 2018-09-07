@@ -40,13 +40,14 @@ JudgementInfo JudgementSqlModel::get_current_judgement_info() const
 void JudgementSqlModel::update(const JudgementInfo & judgement_info)
 {
     if (not m_selected_competition ||
-            m_selected_level < 0 ||
-            m_selected_apparatus.isEmpty())
+            m_selected_apparatus.isEmpty() ||
+            ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna && m_selected_level < 0 ))
     {
         throw IncompleteSelectionError();
     }
 
     QSqlQuery query(m_db);
+
     query.prepare("REPLACE INTO competition_judgement VALUES("
                   ":competition_name_bind_value,"
                   ":apparatus_bind_value,"
@@ -76,22 +77,35 @@ void JudgementSqlModel::update(const JudgementInfo & judgement_info)
 void JudgementSqlModel::update_current_judgement_info()
 {
     if (not m_selected_competition ||
-            m_selected_level < 0 ||
-            m_selected_apparatus.isEmpty())
+            m_selected_apparatus.isEmpty() ||
+            ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna && m_selected_level < 0 ))
     {
         // incomplete selection
         return;
     }
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT judge_number, judge_id_1, judge_id_2, judge_id_3, judge_id_4 "
-                  "FROM competition_judgement WHERE "
-                  "competition_name=:competition_name_bind_value AND "
-                  "apparatus=:apparatus_bind_value AND "
-                  "level=:level_bind_value");
-    query.bindValue(":competition_name_bind_value", (*m_selected_competition).name);
-    query.bindValue(":apparatus_bind_value", m_selected_apparatus);
-    query.bindValue(":level_bind_value", m_selected_level);
+
+    if ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna)
+    {
+        query.prepare("SELECT judge_number, judge_id_1, judge_id_2, judge_id_3, judge_id_4 "
+                      "FROM competition_judgement WHERE "
+                      "competition_name=:competition_name_bind_value AND "
+                      "apparatus=:apparatus_bind_value AND "
+                      "level=:level_bind_value");
+        query.bindValue(":competition_name_bind_value", (*m_selected_competition).name);
+        query.bindValue(":apparatus_bind_value", m_selected_apparatus);
+        query.bindValue(":level_bind_value", m_selected_level);
+    }
+    else
+    {
+        query.prepare("SELECT judge_number, judge_id_1, judge_id_2, judge_id_3, judge_id_4 "
+                      "FROM competition_judgement WHERE "
+                      "competition_name=:competition_name_bind_value AND "
+                      "apparatus=:apparatus_bind_value");
+        query.bindValue(":competition_name_bind_value", (*m_selected_competition).name);
+        query.bindValue(":apparatus_bind_value", m_selected_apparatus);
+    }
 
     if (not query.exec())
     {

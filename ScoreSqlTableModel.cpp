@@ -219,7 +219,7 @@ bool ScoreSqlTableModel::setData(const QModelIndex &index, const QVariant &value
     }
 
     //update the local data query
-    m_data_query.prepare(get_score_sql_query());
+    m_data_query.prepare(get_score_sql_query((*m_selected_competition_info).type));
     if (not m_data_query.exec())
     {
         qWarning() << "SQL statement failed with error " << m_data_query.lastError();
@@ -316,7 +316,7 @@ double ScoreSqlTableModel::calculate_final_score_level_five_and_higher(
     return base + d_value - e_deduction - d_penalty;
 }
 
-QString ScoreSqlTableModel::get_score_sql_query()
+QString ScoreSqlTableModel::get_score_sql_query(const CompetitionType competition_type)
 {
     QString sql_string;
     QTextStream sql_stream(&sql_string);
@@ -327,16 +327,23 @@ QString ScoreSqlTableModel::get_score_sql_query()
         sql_stream << m_column_info[index].data_field_name;
     }
     sql_stream << " FROM competition_score_cop_view"
-               << " WHERE competition_name=\"" << (*m_selected_competition_info).name << "\""
-               << " AND level=" << m_selected_level
-               << " AND apparatus=\"" << m_selected_apparatus << "\""
+               << " WHERE competition_name=\"" << (*m_selected_competition_info).name << "\"";
+    if (competition_type == CompetitionType::SvenskaStegserierna)
+    {
+        sql_stream << " AND level=" << m_selected_level;
+    }
+    sql_stream << " AND apparatus=\"" << m_selected_apparatus << "\""
                << " ORDER BY gymnast_start_number";
+
     return sql_string;
 }
 
 void ScoreSqlTableModel::init_score_sql_query()
 {
-    m_data_query.prepare(get_score_sql_query());
+    if (not m_selected_competition_info)
+        return;
+
+    m_data_query.prepare(get_score_sql_query((*m_selected_competition_info).type));
 
     beginResetModel();
     if (not m_data_query.exec())

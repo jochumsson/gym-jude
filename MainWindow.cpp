@@ -132,7 +132,7 @@ void MainWindow::initialize()
 
 void MainWindow::update_score_tab()
 {
-    update_score_level_gui();
+    update_judge_gui();
 
     try {
         const JudgementInfo & judgement = m_judgement_model->get_current_judgement_info();
@@ -471,6 +471,24 @@ void MainWindow::competition_changed()
         ui->tab_widget->removeTab(TabInfo::get_tab_index(TabInfo::GymTab::TeamResultsTabIndex, true));
     }
 
+    // show hide level guid
+    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    {
+        // show level gui
+        ui->level_label->show();
+        ui->level_combo_box->show();
+        ui->results_level_label->show();
+        ui->results_level_combo_box->show();
+    }
+    else
+    {
+        // hide level gui
+        ui->level_label->hide();
+        ui->level_combo_box->hide();
+        ui->results_level_label->hide();
+        ui->results_level_combo_box->hide();
+    }
+
     // update all other models with the new selection
     m_gymnast_model->set_competition(selected_competition);
 
@@ -763,9 +781,17 @@ void MainWindow::init_enabled_state()
     }
 }
 
-void MainWindow::update_score_level_gui()
+void MainWindow::update_judge_gui()
 {
-    if (ui->level_combo_box->currentText().toInt() < 5)
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
+    {
+        qWarning() << "Failed to update judge input since competition is incomplete";
+        return;
+    }
+
+    if (competition_info.type == CompetitionType::SvenskaStegserierna &&
+            ui->level_combo_box->currentText().toInt() < 5) // two judges for level 1-4
     {
         ui->three_judges_check_box->hide();
         ui->judge_3_combo_box->hide();
