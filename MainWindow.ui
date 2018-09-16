@@ -443,6 +443,7 @@
     <addaction name="separator"/>
     <addaction name="actionImport"/>
     <addaction name="actionEditCompetitionGymnasts"/>
+    <addaction name="actionFindGymnast"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -467,6 +468,14 @@
   <action name="actionEditCompetitions">
    <property name="text">
     <string>Edit Competitions</string>
+   </property>
+  </action>
+  <action name="actionFindGymnast">
+   <property name="text">
+    <string>Find Gymnast</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

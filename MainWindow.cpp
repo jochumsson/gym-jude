@@ -91,10 +91,11 @@ MainWindow::MainWindow(
     connect(ui->publish_results_pushButton, SIGNAL(clicked(bool)), SLOT(publish_results()));
     connect(ui->remove_publication_pushButton, SIGNAL(clicked(bool)), SLOT(remove_publication()));
 
-    //toolbar actions
+    //menu actions
     connect(ui->actionEditCompetitions, SIGNAL(triggered(bool)), this, SIGNAL(open_edit_competitions_dialog()));
     connect(ui->actionImport, SIGNAL(triggered(bool)), this, SLOT(import_gymnast_list()));
     connect(ui->actionEditCompetitionGymnasts, SIGNAL(triggered(bool)), SIGNAL(open_edit_competition_gymnasts_dialog()));
+    connect(ui->actionFindGymnast, SIGNAL(triggered(bool)), SIGNAL(open_find_gymnast_dialog()));
     connect(ui->actionExit, SIGNAL(triggered(bool)), this, SLOT(close()));
 
     //results menu

@@ -29,22 +29,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="99"/>
+        <location filename="EditCompetitionsDialog.ui" line="107"/>
+        <source>Competition Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="EditCompetitionsDialog.ui" line="121"/>
+        <source>Svenska Stegserierna</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="EditCompetitionsDialog.ui" line="126"/>
+        <source>Svenska Pokalenserierna</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="EditCompetitionsDialog.ui" line="136"/>
         <source>Team Competition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="106"/>
+        <location filename="EditCompetitionsDialog.ui" line="143"/>
         <source>Closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="141"/>
+        <location filename="EditCompetitionsDialog.ui" line="178"/>
         <source>Apply Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="148"/>
+        <location filename="EditCompetitionsDialog.ui" line="185"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,63 +77,76 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="66"/>
+        <location filename="EditGymnastsDialog.ui" line="69"/>
         <source>Filter by Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="94"/>
+        <location filename="EditGymnastsDialog.ui" line="104"/>
         <source>Add Gymnast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="101"/>
+        <location filename="EditGymnastsDialog.ui" line="114"/>
         <source>Delete Gymnast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="132"/>
+        <location filename="EditGymnastsDialog.ui" line="145"/>
         <source>Gymnast Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="151"/>
+        <location filename="EditGymnastsDialog.ui" line="164"/>
         <source>Gymnast Id:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="169"/>
+        <location filename="EditGymnastsDialog.ui" line="185"/>
         <source>Gymnast Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="183"/>
+        <location filename="EditGymnastsDialog.ui" line="199"/>
         <source>Club Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="197"/>
+        <location filename="EditGymnastsDialog.ui" line="213"/>
         <source>Team Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="211"/>
+        <location filename="EditGymnastsDialog.ui" line="227"/>
         <source>Level:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="238"/>
+        <location filename="EditGymnastsDialog.ui" line="254"/>
         <source>Start Number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="291"/>
+        <location filename="EditGymnastsDialog.ui" line="307"/>
         <source>Apply Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="298"/>
+        <location filename="EditGymnastsDialog.ui" line="317"/>
         <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FindGymnastDialog</name>
+    <message>
+        <location filename="FindGymnastDialog.ui" line="14"/>
+        <source>Find Gymnast Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="FindGymnastDialog.ui" line="22"/>
+        <source>Gymnast Name:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -193,99 +221,119 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="108"/>
+        <location filename="MainWindow.ui" line="105"/>
         <source>Apparatus:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="135"/>
-        <location filename="MainWindow.ui" line="284"/>
+        <location filename="MainWindow.ui" line="132"/>
+        <location filename="MainWindow.ui" line="281"/>
         <source>Level:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="163"/>
+        <location filename="MainWindow.ui" line="160"/>
         <source>Judge E1:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="184"/>
+        <location filename="MainWindow.ui" line="181"/>
         <source>Judge E2:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="203"/>
+        <location filename="MainWindow.ui" line="200"/>
         <source>Three Judges</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="212"/>
+        <location filename="MainWindow.ui" line="209"/>
         <source>Judge E3:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="263"/>
+        <location filename="MainWindow.ui" line="260"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="305"/>
+        <location filename="MainWindow.ui" line="302"/>
         <source>Results Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="317"/>
+        <location filename="MainWindow.ui" line="327"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="337"/>
         <source>Publish Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="331"/>
+        <location filename="MainWindow.ui" line="344"/>
+        <source>Remove Publication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="358"/>
         <source>Show Score Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="373"/>
+        <location filename="MainWindow.ui" line="403"/>
         <source>Team Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="387"/>
+        <location filename="MainWindow.ui" line="417"/>
         <source>Raw Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="410"/>
+        <location filename="MainWindow.ui" line="440"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="424"/>
+        <location filename="MainWindow.ui" line="455"/>
         <source>Import Gymnast List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="429"/>
+        <location filename="MainWindow.ui" line="460"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="434"/>
+        <location filename="MainWindow.ui" line="465"/>
         <source>Edit Gymnasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="439"/>
+        <location filename="MainWindow.ui" line="470"/>
         <source>Edit Competitions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="283"/>
-        <location filename="MainWindow.cpp" line="364"/>
+        <location filename="MainWindow.ui" line="475"/>
+        <source>Find Gymnast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="478"/>
+        <source>Ctrl+F</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="280"/>
+        <location filename="MainWindow.cpp" line="361"/>
         <source>Participient files (*.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="751"/>
+        <location filename="MainWindow.cpp" line="842"/>
         <source>Print Results</source>
         <translation type="unfinished"></translation>
     </message>
@@ -345,40 +393,52 @@
     <message>
         <location filename="Translator.h" line="32"/>
         <source>WAG All Arround</source>
-        <translation type="finished">Mångkamp Damer</translation>
+        <translation>Mångkamp Damer</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="61"/>
+        <location filename="Translator.h" line="34"/>
+        <source>Apparatus</source>
+        <translation type="unfinished">Redskap</translation>
+    </message>
+    <message>
+        <location filename="Translator.h" line="35"/>
+        <source>Competition</source>
+        <translation type="unfinished">Tävling</translation>
+    </message>
+    <message>
+        <location filename="ResultSqlItemModel.cpp" line="234"/>
+        <location filename="Translator.h" line="33"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Namn</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="62"/>
+        <location filename="ResultSqlItemModel.cpp" line="235"/>
+        <location filename="Translator.h" line="36"/>
         <source>Club</source>
-        <translation type="unfinished"></translation>
+        <translation>Klubb</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="65"/>
+        <location filename="ResultSqlItemModel.cpp" line="238"/>
         <source>Team</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="67"/>
+        <location filename="ResultSqlItemModel.cpp" line="240"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="57"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="60"/>
         <source>Team Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="58"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="61"/>
         <source>Team Club</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="59"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="62"/>
         <source>Final Score</source>
         <translation type="unfinished"></translation>
     </message>

@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     TeamResultSqlItemModel.cpp \
     JudgementSqlModel.cpp \
     ScoreItemDelegate.cpp \
-    ResultTypeSqlModel.cpp
+    ResultTypeSqlModel.cpp \
+    FindGymnastDialog.cpp \
+    FindGymnastSqlItemModel.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -75,12 +77,16 @@ HEADERS  += MainWindow.h \
     ScoreItemDelegate.h \
     Translator.h \
     IResultTypeModel.h \
-    ResultTypeSqlModel.h
+    ResultTypeSqlModel.h \
+    FindGymnastDialog.h \
+    IFindGymnastItemModel.h \
+    FindGymnastSqlItemModel.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \
     EditCompetitionsDialog.ui \
-    EditGymnastsDialog.ui
+    EditGymnastsDialog.ui \
+    FindGymnastDialog.ui
 
 LINUX-g++:LIBS += -lmysqlclient -L/usr/lib/i386-linux-gnu/libmysqlclient.a
 ##win32:LIBS += -LC:\projects\gymnastic-judge\lib\win32-x64 -llibmysql

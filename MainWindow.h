@@ -99,6 +99,7 @@ public:
 signals:
     void open_edit_competitions_dialog();
     void open_edit_competition_gymnasts_dialog();
+    void open_find_gymnast_dialog();
 
 public slots:
     void initialize();

@@ -3,6 +3,7 @@
 #include "LoginDialog.h"
 #include "EditCompetitionsDialog.h"
 #include "EditGymnastsDialog.h"
+#include "FindGymnastDialog.h"
 
 #include "CompetitionSqlModel.h"
 #include "CompetitionSqlTableModel.h"
@@ -18,6 +19,7 @@
 #include "ResultSqlItemModel.h"
 #include "TeamResultSqlItemModel.h"
 #include "RawSqlDataModel.h"
+#include "FindGymnastSqlItemModel.h"
 
 #include <QApplication>
 #include <QSqlDatabase>
@@ -55,7 +57,17 @@ void create_edit_gymnasts_dialog(
     edit_gymnasts_dialog->setModal(true);
     QObject::connect(main_window, SIGNAL(open_edit_competition_gymnasts_dialog()),
                      edit_gymnasts_dialog, SLOT(show()));
-    QObject::connect(edit_gymnasts_dialog, SIGNAL(accepted()), main_window, SLOT(initialize()));
+}
+
+void create_find_gymnast_dialg(
+        MainWindow * main_window,
+        const IFindGymnastItemModelPtr & find_gymnast_item_model)
+{
+    auto find_gymanst_dialg = new FindGymnastDialog(
+                find_gymnast_item_model,
+                main_window);
+    QObject::connect(main_window, SIGNAL(open_find_gymnast_dialog()),
+                     find_gymanst_dialg, SLOT(show()));
 }
 
 int main(int argc, char *argv[])
@@ -108,6 +120,9 @@ int main(int argc, char *argv[])
                 std::make_shared<GymnastSqlModel>(db),
                 std::make_shared<GymnastSqlTableModel>(db),
                 std::make_shared<LevelSqlTableModel>(db));
+    create_find_gymnast_dialg(
+                &main_window,
+                std::make_shared<FindGymnastSqlItemModel>(db));
 
     // create login dialog
     LoginDialog login_dialog(db);
