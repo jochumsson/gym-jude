@@ -30,6 +30,9 @@
    </item>
    <item>
     <widget class="QTableView" name="findGymnastTableView">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>

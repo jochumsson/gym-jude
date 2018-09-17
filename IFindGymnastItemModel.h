@@ -25,6 +25,11 @@ public:
 
     virtual FindGymnastItem get_selection(int model_index) const = 0;
 
+    virtual int move_selection_up() = 0;
+
+    virtual int move_selection_down() = 0;
+
+
 };
 
 using IFindGymnastItemModelPtr = std::shared_ptr< IFindGymnastItemModel >;

@@ -8,6 +8,7 @@
 FindGymnastSqlItemModel::FindGymnastSqlItemModel(QSqlDatabase & db)
     : m_query(db)
 {
+    m_selection_model.setModel(this);
 }
 
 QAbstractItemModel * FindGymnastSqlItemModel::get_qt_model()
@@ -32,6 +33,44 @@ void FindGymnastSqlItemModel::set_search_name(const QString & name)
         qWarning() << "Query: " << sql_query_str;
     }
     endResetModel();
+}
+
+int FindGymnastSqlItemModel::move_selection_up()
+{
+    QModelIndex current_index = m_selection_model.currentIndex();
+    if (not current_index.isValid())
+    {
+        current_index = index(0, 0);
+    }
+
+    int next_row_index = current_index.row();
+    if (next_row_index > 0)
+    {
+        next_row_index -= 1;
+    }
+
+    const QModelIndex & next_index = index(next_row_index, current_index.column());
+    m_selection_model.setCurrentIndex(next_index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::SelectCurrent);
+    return next_row_index;
+}
+
+int FindGymnastSqlItemModel::move_selection_down()
+{
+    QModelIndex current_index = m_selection_model.currentIndex();
+    if (not current_index.isValid())
+    {
+        current_index = index(0, 0);
+    }
+
+    int next_row_index = current_index.row();
+    if (next_row_index + 1 < rowCount())
+    {
+        next_row_index += 1;
+    }
+
+    const QModelIndex & next_index = index(next_row_index, current_index.column());
+    m_selection_model.setCurrentIndex(next_index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::SelectCurrent);
+    return next_row_index;
 }
 
 int FindGymnastSqlItemModel::rowCount(const QModelIndex &parent) const

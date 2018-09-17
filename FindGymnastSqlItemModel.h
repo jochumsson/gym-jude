@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
+#include <QItemSelectionModel>
 
 class FindGymnastSqlItemModel:
         public QAbstractTableModel,
@@ -24,6 +25,10 @@ public:
         return {};
     }
 
+    int move_selection_up() final;
+
+    int move_selection_down() final;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const final;
     int columnCount(const QModelIndex &parent = QModelIndex()) const final;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;
@@ -32,5 +37,6 @@ public:
 private:
     mutable QSqlQuery m_query;
     Translator m_translator;
+    QItemSelectionModel m_selection_model;
 
 };

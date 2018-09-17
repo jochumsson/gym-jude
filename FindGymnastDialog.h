@@ -19,6 +19,8 @@ private slots:
     void search_key_changed(const QString & search_key);
 
 private:
+    bool eventFilter(QObject *object, QEvent *event);
+
     Ui::FindGymnastDialog *ui;
     IFindGymnastItemModelPtr m_find_gymnast_model;
 
