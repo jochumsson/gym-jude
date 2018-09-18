@@ -60,13 +60,13 @@ void create_edit_gymnasts_dialog(
 }
 
 void create_find_gymnast_dialg(
-        MainWindow * main_window,
+        MainWindow & main_window,
         const IFindGymnastItemModelPtr & find_gymnast_item_model)
 {
     auto find_gymanst_dialg = new FindGymnastDialog(
                 find_gymnast_item_model,
                 main_window);
-    QObject::connect(main_window, SIGNAL(open_find_gymnast_dialog()),
+    QObject::connect(&main_window, SIGNAL(open_find_gymnast_dialog()),
                      find_gymanst_dialg, SLOT(show()));
 }
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                 std::make_shared<GymnastSqlTableModel>(db),
                 std::make_shared<LevelSqlTableModel>(db));
     create_find_gymnast_dialg(
-                &main_window,
+                main_window,
                 std::make_shared<FindGymnastSqlItemModel>(db));
 
     // create login dialog

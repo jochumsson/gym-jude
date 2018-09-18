@@ -20,7 +20,7 @@ void FindGymnastSqlItemModel::set_search_name(const QString & name)
 {
     QString sql_query_str;
     QTextStream sql_stream(&sql_query_str);
-    sql_stream << "SELECT distinct gymnast_name as Name, apparatus as Apparatus, competition_name as Competition, gymnast_club as Club "
+    sql_stream << "SELECT distinct gymnast_name as Name, apparatus as Apparatus, competition_name as Competition, gymnast_club as Club, gymnast_id, level "
               << "FROM competition_score_cop_view where gymnast_name LIKE "
               <<"\'%" << name << "%\'"
              << " AND competition_name IN(SELECT competition_name FROM competition WHERE closed=false) "
@@ -34,6 +34,24 @@ void FindGymnastSqlItemModel::set_search_name(const QString & name)
     }
     endResetModel();
 }
+
+FindGymnastItem FindGymnastSqlItemModel::get_selection(int model_index) const
+{
+    FindGymnastItem gymnast_item;
+    
+    if (m_query.seek(model_index))
+    {
+        QSqlRecord record = m_query.record();
+        gymnast_item.gymanst_name = record.value("Name").toString();
+        gymnast_item.gymnast_id = record.value("gymnast_id").toString();
+        gymnast_item.apparatus = record.value("Apparatus").toString();
+        gymnast_item.competition_name = record.value("Competition").toString();
+        gymnast_item.level = record.value("level").toInt();
+    }    
+    
+    return gymnast_item;
+}
+
 
 int FindGymnastSqlItemModel::move_selection_up()
 {
@@ -86,7 +104,7 @@ int FindGymnastSqlItemModel::columnCount(const QModelIndex &parent) const
 
     if (m_query.first())
     {
-        return m_query.record().count();
+        return m_query.record().count() - 2;
     }
 
     return 0;

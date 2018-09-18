@@ -46,6 +46,29 @@ QString ApparatusSqlTableModel::get_apparatus_id(int index) const
     return apparatus_id;
 }
 
+int ApparatusSqlTableModel::get_text_index(const QString & text) const
+{
+    int index = -1;
+
+    if (m_sql_model_data.first())
+    {
+        do
+        {
+            ++index;
+            const QSqlRecord & record = m_sql_model_data.record();
+            const QSqlField & field = record.field(0);
+            if (field.isValid() &&
+                    field.value().toString() == text)
+            {
+                break;
+            }
+        }
+        while(m_sql_model_data.next());
+    }
+
+    return index;
+}
+
 int ApparatusSqlTableModel::rowCount(const QModelIndex &) const
 {
     return m_sql_model_data.size();

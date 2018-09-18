@@ -121,6 +121,31 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::set_selection(
+        const QString & competition_name,
+        const QString & gymnast_id,
+        const QString & apparatus,
+        boost::optional<int> level)
+{
+    ui->competition_combo_box->setCurrentText(competition_name);
+    const int & apparatus_index = m_apparatus_table_model->get_text_index(apparatus);
+    if (apparatus_index > -1)
+    {
+        ui->apparatus_combo_box->setCurrentIndex(apparatus_index);
+    }
+    if (level)
+    {
+        ui->level_combo_box->setCurrentText(QString::number(*level));
+    }
+    const int & gymanst_index = m_score_table_model->get_gymnast_index(gymnast_id);
+    if (gymanst_index > -1)
+    {
+        ui->gymnast_table_view->setFocus();
+        ui->gymnast_table_view->selectRow(gymanst_index);
+    }
+}
+
+
 void MainWindow::initialize()
 {
     init_competition_selection();

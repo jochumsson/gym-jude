@@ -13,6 +13,7 @@ public:
     virtual void refresh() = 0;
 
     virtual QString get_apparatus_id(int index) const = 0;
+    virtual int get_text_index(const QString & text) const = 0;
 
 };
 

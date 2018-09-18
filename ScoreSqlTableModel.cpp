@@ -93,6 +93,27 @@ void ScoreSqlTableModel::set_e_number(int number_e_deductions)
     }
 }
 
+int ScoreSqlTableModel::get_gymnast_index(const QString & gymnast_id) const
+{
+    int index = -1;
+    if (m_data_query.first())
+    {
+        do
+        {
+            ++index;
+            const QSqlRecord & record = m_data_query.record();
+            const int & gymnast_id_field_index = get_score_field_column_index(ScoreField::GymnastId);
+            const QSqlField & field = record.field(gymnast_id_field_index);
+            if (field.isValid() && field.value().toString() == gymnast_id)
+            {
+                break;
+            }
+
+        } while(m_data_query.next());
+    }
+    return index;
+}
+
 int ScoreSqlTableModel::rowCount(const QModelIndex &) const
 {
     return m_data_query.size();

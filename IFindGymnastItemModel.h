@@ -2,16 +2,17 @@
 
 #include <QAbstractItemView>
 #include <QString>
+#include <boost/optional.hpp>
 #include <vector>
 #include <memory>
 
 struct FindGymnastItem
 {
     QString competition_name;
-    std::string gymnast_id;
     QString gymanst_name;
-    int level;
+    QString gymnast_id;
     QString apparatus;
+    boost::optional<int> level;
 };
 
 class IFindGymnastItemModel

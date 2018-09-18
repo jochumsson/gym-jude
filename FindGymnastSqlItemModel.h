@@ -19,12 +19,8 @@ public:
 
     void set_search_name(const QString & name) final;
 
-    FindGymnastItem get_selection(int model_index) const final
-    {
-        Q_UNUSED(model_index);
-        return {};
-    }
-
+    FindGymnastItem get_selection(int model_index) const final;
+    
     int move_selection_up() final;
 
     int move_selection_down() final;

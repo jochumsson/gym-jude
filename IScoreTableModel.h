@@ -50,7 +50,10 @@ public:
 
     virtual void set_e_number(int number_e_deductions) = 0;
 
+    virtual int get_gymnast_index(const QString & gymnast_id) const = 0;
+
     virtual ColumnInfo get_column_info(int column_index) const = 0;
+
 };
 
 using IScoreTableModelPtr = std::shared_ptr<IScoreTableModel>;

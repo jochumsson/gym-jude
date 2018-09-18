@@ -20,6 +20,8 @@ public:
 
     QString get_apparatus_id(int index) const final;
 
+    int get_text_index(const QString & text) const final;
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const final;
     int columnCount(const QModelIndex &parent = QModelIndex()) const final;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;

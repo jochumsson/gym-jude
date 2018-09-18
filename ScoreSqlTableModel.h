@@ -32,6 +32,8 @@ public:
 
     void set_e_number(int number_e_deductions) final;
 
+    int get_gymnast_index(const QString & gymnast_id) const final;
+
     int rowCount(const QModelIndex &) const final;
 
     int columnCount(const QModelIndex &) const final;

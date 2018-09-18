@@ -96,6 +96,11 @@ public:
             QWidget * parent = 0);
     ~MainWindow();
 
+    void set_selection(const QString & competition_name,
+            const QString & gymnast_id,
+            const QString & apparatus,
+            boost::optional<int> level = boost::none);
+
 signals:
     void open_edit_competitions_dialog();
     void open_edit_competition_gymnasts_dialog();
