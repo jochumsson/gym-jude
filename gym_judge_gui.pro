@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     ScoreItemDelegate.cpp \
     ResultTypeSqlModel.cpp \
     FindGymnastDialog.cpp \
-    FindGymnastSqlItemModel.cpp
+    FindGymnastSqlItemModel.cpp \
+    ScoreFocusNavigator.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -80,7 +81,8 @@ HEADERS  += MainWindow.h \
     ResultTypeSqlModel.h \
     FindGymnastDialog.h \
     IFindGymnastItemModel.h \
-    FindGymnastSqlItemModel.h
+    FindGymnastSqlItemModel.h \
+    ScoreFocusNavigator.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \

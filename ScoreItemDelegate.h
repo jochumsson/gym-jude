@@ -1,30 +1,10 @@
 #pragma once
 
 #include "IScoreTableModel.h"
+#include "ScoreFocusNavigator.h"
 #include <QStyledItemDelegate>
 #include <QTableView>
 #include <QStyledItemDelegate>
-
-/**
- * @brief The ScoreItemNavigator class Provides navigation between editable table items
- */
-class ScoreItemNavigator : public QObject
-{
-    Q_OBJECT
-
-public:
-    ScoreItemNavigator(const IScoreTableModelPtr & score_model, QTableView * score_table_view);
-    void set_editor(QWidget * editor);
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) final;
-
-private:
-    IScoreTableModelPtr m_score_model;
-    QTableView * m_score_table_view;
-    QWidget * m_editor = nullptr;
-
-};
 
 /**
  * @brief The ScoreItemDelegate class implements item deligate accepting double and null value
@@ -46,6 +26,6 @@ public:
 
 private:
     IScoreTableModelPtr m_score_model;
-    mutable ScoreItemNavigator m_navigator;
+    mutable ScoreFocusNavigator m_navigator;
 
 };

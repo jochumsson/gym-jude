@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "ScoreItemDelegate.h"
+#include "ScoreFocusNavigator.h"
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlQueryModel>
@@ -114,6 +115,7 @@ MainWindow::MainWindow(
 
     //score item delegate
     ui->gymnast_table_view->setItemDelegate(new ScoreItemDelegate(score_table_model, ui->gymnast_table_view));
+    ui->gymnast_table_view->installEventFilter(new ScoreFocusNavigator(score_table_model, ui->gymnast_table_view));
 }
 
 MainWindow::~MainWindow()
