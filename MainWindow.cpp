@@ -130,6 +130,15 @@ void MainWindow::set_selection(
         boost::optional<int> level)
 {
     ui->competition_combo_box->setCurrentText(competition_name);
+
+    CompetitionInfo selected_competition_info;
+    if (m_competition_model->get_competition_info(selected_competition_info))
+    {
+        ui->tab_widget->setCurrentIndex(
+                    TabInfo::get_tab_index(TabInfo::GymTab::JudgeTabIndex,
+                                           selected_competition_info.team_competition));
+    }
+
     const int & apparatus_index = m_apparatus_table_model->get_text_index(apparatus);
     if (apparatus_index > -1)
     {
