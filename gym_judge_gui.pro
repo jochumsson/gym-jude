@@ -91,6 +91,5 @@ FORMS    += MainWindow.ui \
     FindGymnastDialog.ui
 
 LINUX-g++:LIBS += -lmysqlclient -L/usr/lib/i386-linux-gnu/libmysqlclient.a
-##win32:LIBS += -LC:\projects\gymnastic-judge\lib\win32-x64 -llibmysql
 
 

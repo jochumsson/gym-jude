@@ -33,7 +33,7 @@ void create_edit_competitions_dialog(
 {
     // create edit competition dialog
     auto edit_competitions_dialog =
-            new EditCompetitionsDialog(competition_model, compettition_table_model, main_window);
+            new EditCompetitionsDialog{competition_model, compettition_table_model, main_window};
     edit_competitions_dialog->setModal(true);
     QObject::connect(main_window, SIGNAL(open_edit_competitions_dialog()),
                      edit_competitions_dialog, SLOT(show()));
@@ -48,15 +48,16 @@ void create_edit_gymnasts_dialog(
         const ILevelTableModelPtr & level_table_model)
 {
     // create edit gymnasts dialog
-    auto edit_gymnasts_dialog = new EditGymnastsDialog(
+    auto edit_gymnasts_dialog = new EditGymnastsDialog{
                 competition_model,
                 gymnast_model,
                 gymnast_table_model,
                 level_table_model,
-                main_window);
+                main_window};
     edit_gymnasts_dialog->setModal(true);
     QObject::connect(main_window, SIGNAL(open_edit_competition_gymnasts_dialog()),
                      edit_gymnasts_dialog, SLOT(show()));
+    QObject::connect(edit_gymnasts_dialog, SIGNAL(accepted()), main_window, SLOT(initialize()));
 }
 
 void create_find_gymnast_dialg(
