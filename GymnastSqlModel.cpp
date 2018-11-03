@@ -47,7 +47,7 @@ bool GymnastSqlModel::set_gymnast(const QString & gymnast_id, QString & error_st
     }
 
     auto gymnast_sql_record = query.record();
-    m_gymnast_info = {
+    m_gymnast_info = GymnastInfo {
         gymnast_id,
         gymnast_sql_record.field(1).value().toString(),
         gymnast_sql_record.field(2).value().toString(),

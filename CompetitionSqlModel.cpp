@@ -30,7 +30,7 @@ bool CompetitionSqlModel::set_competition(const QString & competition_name, QStr
     }
 
     auto competition_info = query.record();
-    m_current_competition_info = {
+    m_current_competition_info = CompetitionInfo {
         competition_name,
         competition_info.field(1).value().toDate(),
         strToCompetitionType(competition_info.field(2).value().toString()),

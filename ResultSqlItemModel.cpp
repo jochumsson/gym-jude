@@ -4,6 +4,13 @@
 #include <QSqlField>
 #include <QSqlError>
 #include <QDebug>
+#include <math.h>
+
+bool is_equal(double dX, double dY)
+{
+    const double dEpsilon = 0.000001; // or some other small number
+    return fabs(dX - dY) <= dEpsilon * fabs(dX);
+}
 
 ResultSqlItemModel::ResultSqlItemModel(
         QSqlDatabase & db,
@@ -66,7 +73,7 @@ void ResultSqlItemModel::publish_results() const
             }
 
             if (pos == 0 ||
-                    result.second.final_results != previous_results)
+                    not is_equal(result.second.final_results, previous_results))
             {
                 ++pos;
                 previous_results = result.second.final_results;
@@ -146,12 +153,6 @@ bool ResultSqlItemModel::is_results_published() const
     return (sql_query.size() > 0);
 }
 
-bool is_equal(double dX, double dY)
-{
-    const double dEpsilon = 0.000001; // or some other small number
-    return fabs(dX - dY) <= dEpsilon * fabs(dX);
-}
-
 bool ResultSqlItemModel::is_published_results_up_to_date() const
 {
     if (not m_current_results) return false;
@@ -173,7 +174,7 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
         return false;
     }
 
-    if ((unsigned int)sql_query.size() != (*m_current_results).size())
+    if (static_cast<unsigned int>(sql_query.size()) != (*m_current_results).size())
     {
         return false;
     }
