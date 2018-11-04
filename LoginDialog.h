@@ -12,7 +12,7 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog(QSqlDatabase & db, QWidget *parent = 0);
+    explicit LoginDialog(QSqlDatabase & db, QWidget *parent = nullptr);
     ~LoginDialog();
 
     bool loggedIn() const

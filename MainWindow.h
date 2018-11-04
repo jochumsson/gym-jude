@@ -17,6 +17,7 @@
 #include <QMainWindow>
 #include <QSqlDatabase>
 #include <QAction>
+#include <boost/optional.hpp>
 
 namespace Ui {
 class MainWindow;
@@ -93,7 +94,7 @@ public:
             const IResultItemModelPtr & result_table_model,
             const ITeamResultItemModelPtr & team_result_item_model,
             const IRawDataModelPtr & raw_data_model,
-            QWidget * parent = 0);
+            QWidget * parent = nullptr);
     ~MainWindow();
 
     void set_selection(const QString & competition_name,

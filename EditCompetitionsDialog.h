@@ -16,7 +16,7 @@ public:
     explicit EditCompetitionsDialog(
             const ICompetitionModelPtr & competition_model,
             const ICompetitionTableModelPtr & competition_table_model,
-            QWidget *parent = 0);
+            QWidget *parent = nullptr);
     ~EditCompetitionsDialog();
 
 protected:

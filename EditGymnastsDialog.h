@@ -21,7 +21,7 @@ public:
             const IGymnastModelPtr & gymnast_model,
             const IGymnastTableModelPtr & gymnast_table_model,
             const ILevelTableModelPtr & level_table_model,
-            QWidget * parent = 0);
+            QWidget * parent = nullptr);
     virtual ~EditGymnastsDialog();
 
 protected:

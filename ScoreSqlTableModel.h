@@ -16,7 +16,7 @@ class ScoreSqlTableModel :
     using EValueSet = std::multiset< double >;
 
 public:
-    ScoreSqlTableModel(QSqlDatabase & db, QObject * parent = 0);
+    ScoreSqlTableModel(QSqlDatabase & db, QObject * parent = nullptr);
 
     QAbstractTableModel * get_qt_model() final;
 
