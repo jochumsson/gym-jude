@@ -62,6 +62,9 @@ MainWindow::MainWindow(
     ui->results_splitter->setSizes({20, 600});
     ui->publish_results_status_label->setAutoFillBackground(true);
 
+    //icon
+    setWindowIcon(QIcon{"images/gym_judge.ico"});
+
     //connect modules to views
     ui->competition_combo_box->setModel(m_competition_table_model->get_qt_model());
     ui->level_combo_box->setModel(m_level_table_model->get_qt_model());
