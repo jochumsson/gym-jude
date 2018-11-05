@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     ResultTypeSqlModel.cpp \
     FindGymnastDialog.cpp \
     FindGymnastSqlItemModel.cpp \
-    ScoreFocusNavigator.cpp
+    ScoreFocusNavigator.cpp \
+    ImportGymnastsDialog.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -82,13 +83,15 @@ HEADERS  += MainWindow.h \
     FindGymnastDialog.h \
     IFindGymnastItemModel.h \
     FindGymnastSqlItemModel.h \
-    ScoreFocusNavigator.h
+    ScoreFocusNavigator.h \
+    ImportGymnastsDialog.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \
     EditCompetitionsDialog.ui \
     EditGymnastsDialog.ui \
-    FindGymnastDialog.ui
+    FindGymnastDialog.ui \
+    ImportGymnastsDialog.ui
 
 LINUX-g++:LIBS += -lmysqlclient -L/usr/lib/i386-linux-gnu/libmysqlclient.a
 

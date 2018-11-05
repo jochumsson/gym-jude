@@ -105,6 +105,7 @@ public:
 signals:
     void open_edit_competitions_dialog();
     void open_edit_competition_gymnasts_dialog();
+    void open_import_gymnasts_dialog();
     void open_find_gymnast_dialog();
 
 public slots:
@@ -122,7 +123,6 @@ private slots:
     void team_results_menu_requested(QPoint);
 
     // menu related slots
-    void import_gymnast_list();
     void print_results();
     void print_team_results();
     void export_results();

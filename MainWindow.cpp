@@ -94,8 +94,8 @@ MainWindow::MainWindow(
 
     //menu actions
     connect(ui->actionEditCompetitions, SIGNAL(triggered(bool)), this, SIGNAL(open_edit_competitions_dialog()));
-    connect(ui->actionImport, SIGNAL(triggered(bool)), this, SLOT(import_gymnast_list()));
     connect(ui->actionEditCompetitionGymnasts, SIGNAL(triggered(bool)), SIGNAL(open_edit_competition_gymnasts_dialog()));
+    connect(ui->actionImport, SIGNAL(triggered(bool)), this, SIGNAL(open_import_gymnasts_dialog()));
     connect(ui->actionFindGymnast, SIGNAL(triggered(bool)), SIGNAL(open_find_gymnast_dialog()));
     connect(ui->actionExit, SIGNAL(triggered(bool)), this, SLOT(close()));
 
@@ -222,81 +222,6 @@ void MainWindow::team_results_menu_requested(QPoint pos)
     menu.addAction(m_action_print_team_results);
     menu.addAction(m_action_export_team_results);
     menu.exec(ui->team_results_table_view->mapToGlobal(pos));
-}
-
-void MainWindow::import_gymnast_list()
-{
-    QFileDialog dialog(this);
-
-    QStringList filters;
-    filters << "Participient files (*.csv)";
-    dialog.setNameFilters(filters);
-
-    dialog.setFileMode(QFileDialog::ExistingFile);
-
-    QString error_log;
-    if(dialog.exec()) {
-        QString file_name = dialog.selectedFiles()[0];
-        QFile file(file_name);
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return;
-
-        QTextStream file_stream(&file);
-        int line_nr = 0;
-        while (!file_stream.atEnd())
-        {
-            ++line_nr;
-
-            QString line_str = file_stream.readLine();
-            QStringList line_split = line_str.split(QRegExp("[,;-]"));
-            if (line_split.size() != 4 && line_split.size() != 5)
-            {
-                QString error_string;
-                QTextStream error_stream(&error_string);
-                error_stream << "Invalid participant csv file, error: line "
-                             << line_nr
-                             << " does not contain 8 or 9 fields as expected";
-                QMessageBox msg_box;
-                msg_box.setText(error_string);
-                msg_box.setStandardButtons(QMessageBox::Ok);
-                msg_box.exec();
-                return;
-            }
-            else if(line_split[0].toLower() == "name" ||
-                    line_split[0].toLower() == "gymnast")
-            {
-                //ignore header
-                continue;
-            }
-            else
-            {
-                GymnastInfo gymnast_info = {
-                    QUuid::createUuid().toString(),
-                    line_split[0],
-                    line_split[1],
-                    line_split[2].toInt(),
-                    line_split[3].toInt(),
-                    (line_split.size() > 4) ? line_split[4].trimmed() : QString(),
-                };
-                m_gymnast_table_model->add_gymnast(gymnast_info, error_log);
-            }
-        }
-
-        QMessageBox msg_box;
-        if (error_log.isEmpty())
-        {
-            msg_box.setText("Data imported without errors");
-        }
-        else
-        {
-            msg_box.setText(error_log);
-        }
-        msg_box.setStandardButtons(QMessageBox::Ok);
-        msg_box.exec();
-     }
-
-    // reinitialize all views after import
-    initialize();
 }
 
 void MainWindow::print_results()
