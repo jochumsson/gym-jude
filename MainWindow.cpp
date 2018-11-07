@@ -800,38 +800,67 @@ void MainWindow::update_results_publish_gui()
 
 void MainWindow::print_table_model(QAbstractItemModel *table_model)
 {
-    QPrinter printer;
-
+    QPrinter printer;    
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
     dialog->setWindowTitle(tr("Print Results"));
     if (dialog->exec() != QDialog::Accepted)
         return;
 
-    QTableView pTableView;
-    pTableView.setModel(table_model);
+    QPainter painter(&printer);
+    painter.setBackground(QBrush(Qt::white));
+    const int page_margin = 10;
 
-    double width = pTableView.verticalHeader()->width();
-    double height = pTableView.horizontalHeader()->height();
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
+    {
+        qWarning() << "Failed to print results with no selected competition";
+        return;
+    }
+
+    QLabel print_header_label;
+    print_header_label.setFixedSize(printer.pageRect().width() - 2 * page_margin, 100);
+    print_header_label.setAlignment(Qt::AlignCenter);
+    print_header_label.setMargin(10);
+    print_header_label.setFont({"Arial", 18, QFont::Bold});
+    print_header_label.setStyleSheet("QLabel { background-color : white;}");
+    QString header_text = competition_info.name;
+
+    if (ui->tab_widget->currentIndex() == TabInfo::get_tab_index(TabInfo::GymTab::ResultsTabIndex, competition_info.team_competition))
+    {
+        if (competition_info.type == CompetitionType::SvenskaStegserierna)
+        {
+            header_text += " - ";
+            header_text += tr("Level");
+            header_text += " ";
+            header_text += ui->level_combo_box->currentText();
+        }
+
+        header_text += " - ";
+        header_text += ui->apparatus_combo_box->currentText();
+    }
+    print_header_label.setText(header_text);
+
+    QTableView printTableView;
+    printTableView.setModel(table_model);
+    printTableView.resizeColumnsToContents();
+
+    double width = printTableView.verticalHeader()->width();
+    double height = printTableView.horizontalHeader()->height();
     const int columns = table_model->columnCount();
     const int rows = table_model->rowCount();
 
-    pTableView.resizeColumnsToContents();
-
     for(int i = 0; i < columns; ++i) {
-        width += pTableView.columnWidth(i);
+        width += printTableView.columnWidth(i);
     }
 
     for(int i = 0; i < rows; ++i) {
-        height += pTableView.rowHeight(i);
+        height += printTableView.rowHeight(i);
     }
 
-    pTableView.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pTableView.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pTableView.setFrameShape(QFrame::NoFrame);
-    pTableView.setFixedSize(width, height);
-
-    QPainter painter(&printer);
-    painter.setBackground(QBrush(Qt::white));
+    printTableView.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    printTableView.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    printTableView.setFrameShape(QFrame::NoFrame);
+    printTableView.setFixedSize(width, height);
 
     //scale with respect to width
     double scale = 1;
@@ -842,22 +871,25 @@ void MainWindow::print_table_model(QAbstractItemModel *table_model)
     }
 
     //print all rows
-    const int page_margin = 10;
     int printed_rows = 0;
     double print_from_pos = 0;
-    double print_to_pos = pTableView.horizontalHeader()->height();
+    double print_to_pos = printTableView.horizontalHeader()->height();
     do {
+        // print the header
+        print_header_label.render(&painter, {page_margin, page_margin});
+
         const double page_height = printer.pageRect().height();
         while(printed_rows < table_model->rowCount() &&
-              (pTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (2 * page_margin))
+              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (page_margin + print_header_label.height() + page_margin))
         {
-            print_to_pos += pTableView.rowHeight(printed_rows);
+            print_to_pos += printTableView.rowHeight(printed_rows);
             ++printed_rows;
         }
 
-        pTableView.render(
+        // print the rows that fit to this page
+        printTableView.render(
                     &painter,
-                    QPoint(page_margin, page_margin),
+                    QPoint(page_margin, page_margin + print_header_label.height()),
                     QRegion(0, print_from_pos, width, print_to_pos-print_from_pos));
         print_from_pos += print_to_pos;
     }
