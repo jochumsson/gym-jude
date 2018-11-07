@@ -21,7 +21,16 @@ public:
         Level,
         StartNumber,
         TeamName,
+        ColumnCount,
     };
+
+    Qt::ItemFlags flags(const QModelIndex &index) const final
+    {
+        if (!index.isValid())
+            return Qt::ItemIsEnabled;
+
+        return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    }
 
     int rowCount(const QModelIndex & parent) const final
     {
@@ -35,7 +44,7 @@ public:
 
     int columnCount(const QModelIndex &) const final
     {
-        return 5;
+        return ColumnCount;
     }
 
     QVariant data(const QModelIndex &index, int role) const final
@@ -65,6 +74,39 @@ public:
         }
 
         return QVariant();
+    }
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role) final
+    {
+        if (index.isValid() && role == Qt::EditRole) {
+            const int row = index.row();
+            auto & data = m_imported_gymnasts.at(row);
+
+            const int column = index.column();
+            switch (column) {
+            case Name:
+                data.name = value.toString();
+                break;
+            case Club:
+                data.club = value.toString();
+                break;
+            case Level:
+                data.level = value.toInt();
+                break;
+            case StartNumber:
+                data.start_nr = value.toInt();
+                break;
+            case TeamName:
+                data.team = value.toString();
+                break;
+            default:
+                break;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const final
