@@ -827,6 +827,7 @@ void MainWindow::print_table_model(QAbstractItemModel *table_model)
 
     pTableView.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pTableView.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    pTableView.setFrameShape(QFrame::NoFrame);
     pTableView.setFixedSize(width, height);
 
     QPainter painter(&printer);
@@ -837,26 +838,28 @@ void MainWindow::print_table_model(QAbstractItemModel *table_model)
     if (width > printer.pageRect().width())
     {
         scale = double(printer.pageRect().width()) / width;
-        painter.scale(scale,scale);
+        painter.scale(scale, scale);
     }
 
-    double scaled_width = width*scale;
-    //double scaled_height = height*scale;
-
     //print all rows
+    const int page_margin = 10;
     int printed_rows = 0;
     double print_from_pos = 0;
-    double print_to_pos = pTableView.horizontalHeader()->height() * scale;
+    double print_to_pos = pTableView.horizontalHeader()->height();
     do {
+        const double page_height = printer.pageRect().height();
         while(printed_rows < table_model->rowCount() &&
-              (print_to_pos - print_from_pos) < printer.pageRect().height())
+              (pTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (2 * page_margin))
         {
-            print_to_pos += (pTableView.rowHeight(printed_rows) * scale);
+            print_to_pos += pTableView.rowHeight(printed_rows);
             ++printed_rows;
         }
 
-        pTableView.render(&painter, QPoint(0,0), QRegion(0,print_from_pos,scaled_width, print_to_pos+1));
-        print_from_pos = print_to_pos;
+        pTableView.render(
+                    &painter,
+                    QPoint(page_margin, page_margin),
+                    QRegion(0, print_from_pos, width, print_to_pos-print_from_pos));
+        print_from_pos += print_to_pos;
     }
     while (printed_rows < table_model->rowCount() && printer.newPage());
 }
