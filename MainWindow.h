@@ -155,8 +155,6 @@ private:
     void update_judge_gui();
     void update_results_publish_gui();
 
-    void print_table_model(QAbstractItemModel *item_model);
-
     Ui::MainWindow * ui;
 
     ICompetitionModelPtr m_competition_model;

@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     FindGymnastDialog.cpp \
     FindGymnastSqlItemModel.cpp \
     ScoreFocusNavigator.cpp \
-    ImportGymnastsDialog.cpp
+    ImportGymnastsDialog.cpp \
+    PrintUtility.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -84,7 +85,8 @@ HEADERS  += MainWindow.h \
     IFindGymnastItemModel.h \
     FindGymnastSqlItemModel.h \
     ScoreFocusNavigator.h \
-    ImportGymnastsDialog.h
+    ImportGymnastsDialog.h \
+    PrintUtility.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \

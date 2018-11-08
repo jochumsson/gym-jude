@@ -2,27 +2,15 @@
 #include "ui_MainWindow.h"
 #include "ScoreItemDelegate.h"
 #include "ScoreFocusNavigator.h"
-#include <QSqlRecord>
-#include <QSqlField>
-#include <QSqlQueryModel>
+#include "PrintUtility.h"
+
 #include <QTextStream>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QTimer>
-#include <QItemDelegate>
-#include <stdexcept>
-#include <QStandardItemModel>
-#include <QStandardItem>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QFile>
-#include <QErrorMessage>
-#include <QPrinter>
-#include <QPrintDialog>
-#include <QPainter>
-#include <QUuid>
-#include <QModelIndex>
 #include <QDebug>
+
+#include <stdexcept>
 #include <map>
 #include <functional>
 
@@ -229,12 +217,42 @@ void MainWindow::team_results_menu_requested(QPoint pos)
 
 void MainWindow::print_results()
 {
-    print_table_model(ui->results_table_view->model());
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
+    {
+        qWarning() << "Failed to print results with no selected competition";
+        return;
+    }
+
+    boost::optional<QString> level;
+    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    {
+        level = ui->results_level_combo_box->currentText();
+    }
+
+    PrintUtility::print_results(
+                this,
+                competition_info,
+                level,
+                ui->results_type_comboBox->currentText(),
+                ui->results_table_view->model());
 }
 
 void MainWindow::print_team_results()
 {
-    print_table_model(ui->team_results_table_view->model());
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
+    {
+        qWarning() << "Failed to print results with no selected competition";
+        return;
+    }
+
+    PrintUtility::print_results(
+                this,
+                competition_info,
+                boost::none,
+                "Team Results",
+                ui->team_results_table_view->model());
 }
 
 void MainWindow::export_results()
@@ -796,103 +814,3 @@ void MainWindow::update_results_publish_gui()
     palette.setBrush(QPalette::Background, QBrush(status_color));
     ui->publish_results_status_label->setPalette(palette);
 }
-
-
-void MainWindow::print_table_model(QAbstractItemModel *table_model)
-{
-    QPrinter printer;    
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
-    dialog->setWindowTitle(tr("Print Results"));
-    if (dialog->exec() != QDialog::Accepted)
-        return;
-
-    QPainter painter(&printer);
-    painter.setBackground(QBrush(Qt::white));
-    const int page_margin = 10;
-
-    CompetitionInfo competition_info;
-    if (not m_competition_model->get_competition_info(competition_info))
-    {
-        qWarning() << "Failed to print results with no selected competition";
-        return;
-    }
-
-    QLabel print_header_label;
-    print_header_label.setFixedSize(printer.pageRect().width() - 2 * page_margin, 100);
-    print_header_label.setAlignment(Qt::AlignCenter);
-    print_header_label.setMargin(10);
-    print_header_label.setFont({"Arial", 18, QFont::Bold});
-    print_header_label.setStyleSheet("QLabel { background-color : white;}");
-    QString header_text = competition_info.name;
-
-    if (ui->tab_widget->currentIndex() == TabInfo::get_tab_index(TabInfo::GymTab::ResultsTabIndex, competition_info.team_competition))
-    {
-        if (competition_info.type == CompetitionType::SvenskaStegserierna)
-        {
-            header_text += " - ";
-            header_text += tr("Level");
-            header_text += " ";
-            header_text += ui->level_combo_box->currentText();
-        }
-
-        header_text += " - ";
-        header_text += ui->apparatus_combo_box->currentText();
-    }
-    print_header_label.setText(header_text);
-
-    QTableView printTableView;
-    printTableView.setModel(table_model);
-    printTableView.resizeColumnsToContents();
-
-    double width = printTableView.verticalHeader()->width();
-    double height = printTableView.horizontalHeader()->height();
-    const int columns = table_model->columnCount();
-    const int rows = table_model->rowCount();
-
-    for(int i = 0; i < columns; ++i) {
-        width += printTableView.columnWidth(i);
-    }
-
-    for(int i = 0; i < rows; ++i) {
-        height += printTableView.rowHeight(i);
-    }
-
-    printTableView.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    printTableView.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    printTableView.setFrameShape(QFrame::NoFrame);
-    printTableView.setFixedSize(width, height);
-
-    //scale with respect to width
-    double scale = 1;
-    if (width > printer.pageRect().width())
-    {
-        scale = double(printer.pageRect().width()) / width;
-        painter.scale(scale, scale);
-    }
-
-    //print all rows
-    int printed_rows = 0;
-    double print_from_pos = 0;
-    double print_to_pos = printTableView.horizontalHeader()->height();
-    do {
-        // print the header
-        print_header_label.render(&painter, {page_margin, page_margin});
-
-        const double page_height = printer.pageRect().height();
-        while(printed_rows < table_model->rowCount() &&
-              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (page_margin + print_header_label.height() + page_margin))
-        {
-            print_to_pos += printTableView.rowHeight(printed_rows);
-            ++printed_rows;
-        }
-
-        // print the rows that fit to this page
-        printTableView.render(
-                    &painter,
-                    QPoint(page_margin, page_margin + print_header_label.height()),
-                    QRegion(0, print_from_pos, width, print_to_pos-print_from_pos));
-        print_from_pos += print_to_pos;
-    }
-    while (printed_rows < table_model->rowCount() && printer.newPage());
-}
-
