@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QVariant>
 #include <vector>
+#include <boost/optional.hpp>
 
 class ResultTypeSqlModel :
         public IResultTypeModel,
@@ -35,6 +36,6 @@ private:
     QSqlDatabase & m_db;
     Translator m_translator;
     std::vector<ResultTypeInfo> m_level_result_types;
-    int m_selected_level = -1;
+    boost::optional<int> m_selected_level = boost::none;
 
 };

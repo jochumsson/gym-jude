@@ -17,8 +17,6 @@ QAbstractTableModel * ResultTypeSqlModel::get_qt_model()
 
 void ResultTypeSqlModel::refresh()
 {
-    if (m_selected_level < 0) return;
-
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT DISTINCT result_type FROM result");
     if (not sql_query.exec())
@@ -40,7 +38,8 @@ void ResultTypeSqlModel::refresh()
 
         const QString result_type_string = field.value().toString();
         const ResultType result_type = result_type_from_string(result_type_string);
-        if (m_selected_level > 4 ||
+        if (not m_selected_level ||
+                *m_selected_level > 4 ||
                 result_type == ResultType::AllArround)
         {
             // level < 5 only support all arround competitions
@@ -60,7 +59,14 @@ ResultTypeInfo ResultTypeSqlModel::get_result_type(int index) const
 
 void ResultTypeSqlModel::set_level(int level)
 {
-    m_selected_level = level;
+    if (level > 0)
+    {
+        m_selected_level = level;
+    }
+    else
+    {
+        m_selected_level = boost::none;
+    }
 }
 
 ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const ResultType result_type) const
