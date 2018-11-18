@@ -376,7 +376,7 @@ void ScoreSqlTableModel::init_score_sql_query()
 
 void ScoreSqlTableModel::set_column_info()
 {
-    if (m_selected_level < 5)
+    if (m_selected_level < 5 && m_selected_level > 0)
     {
         m_column_info = column_info_level_less_than_five;
     }
