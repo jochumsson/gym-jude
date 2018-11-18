@@ -20,7 +20,7 @@ void FindGymnastSqlItemModel::set_search_name(const QString & name)
 {
     QString sql_query_str;
     QTextStream sql_stream(&sql_query_str);
-    sql_stream << "SELECT distinct gymnast_name as Name, apparatus as Apparatus, competition_name as Competition, gymnast_club as Club, gymnast_id, level "
+    sql_stream << "SELECT distinct gymnast_name as Name, apparatus as Apparatus, competition_name as Competition, gymnast_club as Club, level, gymnast_id "
               << "FROM competition_score_cop_view where gymnast_name LIKE "
               <<"\'%" << name << "%\'"
              << " AND competition_name IN(SELECT competition_name FROM competition WHERE closed=false) "
@@ -104,7 +104,7 @@ int FindGymnastSqlItemModel::columnCount(const QModelIndex &parent) const
 
     if (m_query.first())
     {
-        return m_query.record().count() - 2;
+        return m_query.record().count() - 1;
     }
 
     return 0;
