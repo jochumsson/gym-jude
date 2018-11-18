@@ -24,6 +24,12 @@ FindGymnastDialog::~FindGymnastDialog()
 
 void FindGymnastDialog::search_key_changed(const QString & search_key)
 {
+    if (search_key.size() < 3)
+    {
+        // do not refresh befre we have initial search keys
+        return;
+    }
+
     m_find_gymnast_model->set_search_name(search_key);
     ui->findGymnastTableView->resizeColumnsToContents();
     if (m_find_gymnast_model->get_qt_model()->rowCount() > 0)
