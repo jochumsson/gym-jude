@@ -36,6 +36,6 @@ private:
     QSqlDatabase & m_db;
     Translator m_translator;
     std::vector<ResultTypeInfo> m_level_result_types;
-    boost::optional<int> m_selected_level = boost::none;
+    boost::optional<int> m_selected_level;
 
 };

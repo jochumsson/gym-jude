@@ -96,7 +96,3 @@ FORMS    += MainWindow.ui \
     ImportGymnastsDialog.ui
 
 RC_FILE = images/gym_judge.rc
-
-LINUX-g++:LIBS += -lmysqlclient -L/usr/lib/i386-linux-gnu/libmysqlclient.a
-
-
