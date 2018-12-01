@@ -3,6 +3,7 @@
 #include "ScoreItemDelegate.h"
 #include "ScoreFocusNavigator.h"
 #include "PrintUtility.h"
+#include "UninitializedGuiScope.h"
 
 #include <QTextStream>
 #include <QMessageBox>
@@ -147,12 +148,20 @@ void MainWindow::set_selection(
     }
 }
 
+void MainWindow::add_state_observer(std::weak_ptr<IGuiStateObserver> state_observer)
+{
+    m_gui_state_server.register_observer(state_observer);
+}
+
 void MainWindow::initialize()
 {
-    init_competition_selection();
-    init_score_tab();
-    init_results_tab();
-    m_raw_data_model->refresh();
+    {
+        UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server, true);
+        init_competition_selection();
+        init_score_tab();
+        init_results_tab();
+        m_raw_data_model->refresh();
+    }
 
     showMaximized();
 }
@@ -179,6 +188,8 @@ void MainWindow::update_score_tab()
 
 void MainWindow::update_results_tab()
 {    
+    UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+
     if (ui->results_level_combo_box->currentIndex() < 0)
         ui->results_level_combo_box->setCurrentIndex(0);
     if (ui->results_type_comboBox->currentIndex() < 0)
@@ -420,6 +431,9 @@ void MainWindow::competition_changed()
     const QString & selected_competition = ui->competition_combo_box->currentText();
     if (selected_competition.isEmpty()) return; // invalid selection
 
+    // prohibit multiple gui update
+    UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+
     QString error;
     if (not m_competition_model->set_competition(selected_competition, error))
     {
@@ -641,6 +655,9 @@ void MainWindow::results_level_changed()
         }
     }
 
+    // avoid multiple updates
+    UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+
     // disable d value selection for level < 5
     const bool disable_check_box = (level && *level < 5);
     ui->score_details_check_box->setDisabled(disable_check_box);
@@ -673,6 +690,7 @@ void MainWindow::show_score_details_changed()
 
 void MainWindow::result_type_changed()
 {
+    UninitializedGuiScope uninitialized_gui_scop(m_gui_state_server);
     const auto & result_type =
             m_result_type_model->get_result_type(ui->results_type_comboBox->currentIndex());
     m_result_item_model->set_result_type(result_type);

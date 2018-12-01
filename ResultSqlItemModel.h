@@ -1,13 +1,16 @@
 #pragma once
 
 #include "IResultItemModel.h"
+#include "IGuiStateObserver.h"
 #include "Translator.h"
 #include "IResultsCalculator.h"
 #include <QSqlDatabase>
 #include <QStandardItemModel>
 #include <boost/optional.hpp>
 
-class ResultSqlItemModel : public IResultItemModel
+class ResultSqlItemModel :
+        public IResultItemModel,
+        public IGuiStateObserver
 {
 public:
     ResultSqlItemModel(QSqlDatabase & db, const IResultsCalculatorPtr & results_calculator);
@@ -26,6 +29,8 @@ public:
     void remove_publication() const final;
     bool is_results_published() const final;
     bool is_published_results_up_to_date() const final;
+
+    void on_gui_state_changed(const GuiState new_state) final;
 
 private:
     void update_results();
@@ -46,6 +51,7 @@ private:
     boost::optional<int> m_current_level;
     ResultTypeInfo m_result_type_info;
     bool m_show_score_details = false;
+    GuiState m_gui_state = GuiState::Uninitialized;
 
 };
 

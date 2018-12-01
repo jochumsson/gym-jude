@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     FindGymnastSqlItemModel.cpp \
     ScoreFocusNavigator.cpp \
     ImportGymnastsDialog.cpp \
-    PrintUtility.cpp
+    PrintUtility.cpp \
+    gui_state_machine/GuiStateServer.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -86,7 +87,11 @@ HEADERS  += MainWindow.h \
     FindGymnastSqlItemModel.h \
     ScoreFocusNavigator.h \
     ImportGymnastsDialog.h \
-    PrintUtility.h
+    PrintUtility.h \
+    gui_state_machine/GuiState.h \
+    gui_state_machine/GuiStateServer.h \
+    gui_state_machine/IGuiStateObserver.h \
+    gui_state_machine/UninitializedGuiScope.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \
@@ -95,4 +100,5 @@ FORMS    += MainWindow.ui \
     FindGymnastDialog.ui \
     ImportGymnastsDialog.ui
 
+INCLUDEPATH += gui_state_machine
 RC_FILE = images/gym_judge.rc

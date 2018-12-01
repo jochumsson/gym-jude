@@ -22,7 +22,10 @@ ResultSqlItemModel::ResultSqlItemModel(
 
 void ResultSqlItemModel::refresh()
 {
-    update_results();
+    if (m_gui_state == GuiState::Initialized)
+    {
+        update_results();
+    }
 }
 
 void ResultSqlItemModel::set_competition(const CompetitionInfo & competition_info)
@@ -310,3 +313,14 @@ void ResultSqlItemModel::update_results()
     }
 }
 
+void ResultSqlItemModel::on_gui_state_changed(const GuiState new_state)
+{
+    if (new_state != m_gui_state)
+    {
+        m_gui_state = new_state;
+        if (new_state == GuiState::Initialized)
+        {
+            update_results();
+        }
+    }
+}

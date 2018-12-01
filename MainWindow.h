@@ -13,6 +13,7 @@
 #include "IResultItemModel.h"
 #include "ITeamResultItemModel.h"
 #include "IRawDataModel.h"
+#include "GuiStateServer.h"
 #include "GymnastResults.h"
 #include <QMainWindow>
 #include <QSqlDatabase>
@@ -102,6 +103,8 @@ public:
             const QString & apparatus,
             boost::optional<int> level = boost::none);
 
+    void add_state_observer(std::weak_ptr<IGuiStateObserver> state_observer);
+
 signals:
     void open_edit_competitions_dialog();
     void open_edit_competition_gymnasts_dialog();
@@ -156,6 +159,7 @@ private:
     void update_results_publish_gui();
 
     Ui::MainWindow * ui;
+    GuiStateServer m_gui_state_server;
 
     ICompetitionModelPtr m_competition_model;
     ICompetitionTableModelPtr m_competition_table_model;
