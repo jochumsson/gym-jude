@@ -633,6 +633,12 @@ void MainWindow::results_level_changed()
         {
             level = level_selection;
         }
+        else
+        {
+            // model updated but no selection in gui
+            // wait for gui selection before updating other models
+            return;
+        }
     }
 
     // disable d value selection for level < 5
