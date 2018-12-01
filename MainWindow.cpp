@@ -147,7 +147,6 @@ void MainWindow::set_selection(
     }
 }
 
-
 void MainWindow::initialize()
 {
     init_competition_selection();
@@ -480,14 +479,14 @@ void MainWindow::competition_changed()
 
     m_level_table_model->set_competition(selected_competition);
     m_level_table_model->refresh();
+    ui->level_combo_box->setCurrentIndex(0);
+    ui->results_level_combo_box->setCurrentIndex(0);
 
     m_judgement_model->set_competition(competition_info);
     m_score_table_model->set_competition(competition_info);
-    ui->level_combo_box->setCurrentIndex(0);
     m_score_table_model->refresh();
 
     m_result_item_model->set_competition(competition_info);
-    ui->results_level_combo_box->setCurrentIndex(0);
     m_result_item_model->refresh();
 
     m_team_result_item_model->set_competition(competition_info);
@@ -617,22 +616,38 @@ void MainWindow::score_level_changed()
 
 void MainWindow::results_level_changed()
 {
-    const QString & level_str = ui->results_level_combo_box->currentText();
-    if (level_str.isEmpty()) return; // invalid selection
+    CompetitionInfo competition_info;
+    if (not m_competition_model->get_competition_info(competition_info))
+    {
+        // no competion selected
+        return;
+    }
 
-    bool int_ok = false;
-    const int level = level_str.toInt(&int_ok);
-    if (not int_ok) return; // invalid data
+    boost::optional<int> level = boost::none;
+    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    {
+        const QString & level_str = ui->results_level_combo_box->currentText();
+        bool int_ok = false;
+        const int level_selection = level_str.toInt(&int_ok);
+        if (int_ok)
+        {
+            level = level_selection;
+        }
+    }
 
     // disable d value selection for level < 5
-    ui->score_details_check_box->setDisabled((level<5));
+    const bool disable_check_box = (level && *level < 5);
+    ui->score_details_check_box->setDisabled(disable_check_box);
 
-    const int current_result_type_index = ui->results_type_comboBox->currentIndex();
-    m_result_type_model->set_level(level);
-    m_result_type_model->refresh();
-    if (m_result_item_model->get_qt_model()->rowCount() >= current_result_type_index)
+    if (m_result_type_model->get_selected_level() != level)
     {
-        ui->results_type_comboBox->setCurrentIndex(current_result_type_index);
+        const int current_result_type_index = ui->results_type_comboBox->currentIndex();
+        m_result_type_model->set_level(level);
+        m_result_type_model->refresh();
+        if (m_result_item_model->get_qt_model()->rowCount() >= current_result_type_index)
+        {
+            ui->results_type_comboBox->setCurrentIndex(current_result_type_index);
+        }
     }
 
     m_result_item_model->set_level(level);
@@ -656,7 +671,6 @@ void MainWindow::result_type_changed()
             m_result_type_model->get_result_type(ui->results_type_comboBox->currentIndex());
     m_result_item_model->set_result_type(result_type);
     m_result_item_model->refresh();
-
     update_results_tab();
 }
 

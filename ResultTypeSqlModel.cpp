@@ -42,7 +42,7 @@ void ResultTypeSqlModel::refresh()
                 *m_selected_level > 4 ||
                 result_type == ResultType::AllArround)
         {
-            // level < 5 only support all arround competitions
+            // level < 5 only supports all arround competitions
             m_level_result_types.push_back({result_type, result_type_string});
         }
     }
@@ -52,21 +52,19 @@ void ResultTypeSqlModel::refresh()
 
 ResultTypeInfo ResultTypeSqlModel::get_result_type(int index) const
 {
-    if ((unsigned int)index < m_level_result_types.size())
-        return m_level_result_types[index];
+    if (static_cast<unsigned int>(index) < m_level_result_types.size())
+        return m_level_result_types[static_cast<unsigned int>(index)];
     return {};
 }
 
-void ResultTypeSqlModel::set_level(int level)
+boost::optional<int> ResultTypeSqlModel::get_selected_level() const
 {
-    if (level > 0)
-    {
-        m_selected_level = level;
-    }
-    else
-    {
-        m_selected_level = boost::none;
-    }
+    return m_selected_level;
+}
+
+void ResultTypeSqlModel::set_level(boost::optional<int> level)
+{
+    m_selected_level = level;
 }
 
 ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const ResultType result_type) const
@@ -76,7 +74,7 @@ ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const ResultType result_
 
 int ResultTypeSqlModel::rowCount(const QModelIndex &) const
 {
-    return m_level_result_types.size();
+    return static_cast<int>(m_level_result_types.size());
 }
 
 int ResultTypeSqlModel::columnCount(const QModelIndex &) const
@@ -89,9 +87,10 @@ QVariant ResultTypeSqlModel::data(const QModelIndex &index, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
-    if ((unsigned int)index.row() < m_level_result_types.size())
+    if (static_cast<unsigned int>(index.row()) < m_level_result_types.size())
     {
-        const auto & result_type_str = m_level_result_types[index.row()].result_type_string;
+        const auto & result_type_str =
+                m_level_result_types[static_cast<unsigned int>(index.row())].result_type_string;
         return m_translator.translate(result_type_str);
     }
 

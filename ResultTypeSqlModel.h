@@ -6,7 +6,6 @@
 #include <QSqlDatabase>
 #include <QVariant>
 #include <vector>
-#include <boost/optional.hpp>
 
 class ResultTypeSqlModel :
         public IResultTypeModel,
@@ -21,7 +20,8 @@ public:
 
     ResultTypeInfo get_result_type(int index) const final;
 
-    void set_level(int level) final;
+    boost::optional<int> get_selected_level() const final;
+    void set_level(boost::optional<int> level) final;
 
     ResultTypeInfo get_result_type_info(const ResultType result_type) const final;
 

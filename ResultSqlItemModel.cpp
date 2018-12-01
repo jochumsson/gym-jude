@@ -30,7 +30,7 @@ void ResultSqlItemModel::set_competition(const CompetitionInfo & competition_inf
     m_current_competition = competition_info;
 }
 
-void ResultSqlItemModel::set_level(int level)
+void ResultSqlItemModel::set_level(boost::optional<int> level)
 {
     m_current_level = level;
 }
@@ -82,7 +82,7 @@ void ResultSqlItemModel::publish_results() const
             stream << "("
                    << "\"" << (*m_current_competition).name << "\","
                    << "\"" << m_result_type_info.result_type_string << "\","
-                   << m_current_level << ","
+                   << get_sql_level_value() << ","
                    << pos << ","
                    << "\"" << result.second.gymnast_id << "\","
                    << result.second.final_results
@@ -101,7 +101,7 @@ void ResultSqlItemModel::remove_publication() const
 {
     if (not m_current_competition ||
             m_result_type_info.result_type == ResultType::Unknown ||
-            ((*m_current_competition).type == CompetitionType::SvenskaStegserierna && m_current_level < 0 ))
+            ((*m_current_competition).type == CompetitionType::SvenskaStegserierna && not m_current_level))
         return;
 
     QSqlQuery query(m_db);
@@ -113,7 +113,7 @@ void ResultSqlItemModel::remove_publication() const
                       "AND level=:level_bind_value");
         query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
         query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
-        query.bindValue(":level_bind_value", m_current_level);
+        query.bindValue(":level_bind_value", get_sql_level_value());
     }
     else
     {
@@ -141,7 +141,7 @@ bool ResultSqlItemModel::is_results_published() const
                       "AND level=:level_bind_value");
     sql_query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
     sql_query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
-    sql_query.bindValue(":level_bind_value", m_current_level);
+    sql_query.bindValue(":level_bind_value", get_sql_level_value());
 
     if (not sql_query.exec())
     {
@@ -165,7 +165,7 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
                       "ORDER BY final_score");
     sql_query.bindValue(":competition_name_bind_value", (*m_current_competition).name);
     sql_query.bindValue(":result_type_bind_value", m_result_type_info.result_type_string);
-    sql_query.bindValue(":level_bind_value", m_current_level);
+    sql_query.bindValue(":level_bind_value", get_sql_level_value());
 
     if (not sql_query.exec())
     {
@@ -209,22 +209,15 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
 void ResultSqlItemModel::update_results()
 {
     if (not m_current_competition ||
-            m_current_level < 0 ||
             m_result_type_info.result_type == ResultType::Unknown ) {
         qDebug() << "Failed to update results with incomplete selections";
         return;
     }
 
-    boost::optional<int> level;
-    if ((*m_current_competition).type == CompetitionType::SvenskaStegserierna)
-    {
-        level = m_current_level;
-    }
-
     m_current_results =
             m_results_calculator->calculate_results(
                 *m_current_competition,
-                level,
+                m_current_level,
                 m_result_type_info.result_type);
     m_model.clear();
     for (ResultsMap::iterator it = (*m_current_results).begin(); it != (*m_current_results).end(); ++it)

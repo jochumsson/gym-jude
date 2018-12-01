@@ -17,7 +17,7 @@ public:
     void refresh() final;
 
     void set_competition(const CompetitionInfo & competition_info) final;
-    void set_level(int level) final;
+    void set_level(boost::optional<int> level) final;
     void set_result_type(const ResultTypeInfo & result_type) final;
     void set_show_score_details(bool show_score_details) final;
     const ResultsMap & get_current_results() const final;
@@ -29,6 +29,13 @@ public:
 
 private:
     void update_results();
+    int get_sql_level_value() const
+    {
+        if (m_current_level)
+            return *m_current_level;
+        else
+            return 0;
+    }
 
     QSqlDatabase & m_db;
     QStandardItemModel m_model;
@@ -36,7 +43,7 @@ private:
     IResultsCalculatorPtr m_results_calculator;
     boost::optional<ResultsMap> m_current_results;
     boost::optional<CompetitionInfo> m_current_competition;
-    int m_current_level = -1;
+    boost::optional<int> m_current_level;
     ResultTypeInfo m_result_type_info;
     bool m_show_score_details = false;
 

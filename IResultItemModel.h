@@ -5,6 +5,7 @@
 #include "IResultsCalculator.h"
 #include <QAbstractItemModel>
 #include <memory>
+#include <boost/optional.hpp>
 #include <stdexcept>
 
 class IncompleteResults : public std::runtime_error
@@ -27,7 +28,7 @@ public:
 
     virtual void set_competition(const CompetitionInfo & competition_info) = 0;
 
-    virtual void set_level(int level) = 0;
+    virtual void set_level(boost::optional<int> level) = 0;
 
     virtual void set_result_type(const ResultTypeInfo & result_type) = 0;
 
