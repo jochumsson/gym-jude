@@ -6,14 +6,17 @@
 EditCompetitionsDialog::EditCompetitionsDialog(
         const ICompetitionModelPtr & competition_model,
         const ICompetitionTableModelPtr & competition_table_model,
+        const std::shared_ptr<ICompetitionTypeModel> & competition_type_model,
         QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EditCompetitionsDialog),
     m_competition_model(competition_model),
-    m_competition_table_model(competition_table_model)
+    m_competition_table_model(competition_table_model),
+    m_competition_type_model(competition_type_model)
 {
     ui->setupUi(this);
     ui->competitionsListView->setModel(m_competition_table_model->get_qt_model());
+    ui->competitionTypeComboBox->setModel(m_competition_type_model->get_qt_model());
 
     connect(ui->closePushButton, SIGNAL(clicked(bool)), SLOT(accept()));
     connect(ui->competitionsListView, SIGNAL(clicked(QModelIndex)), SLOT(competition_selected(QModelIndex)));
@@ -30,6 +33,7 @@ EditCompetitionsDialog::~EditCompetitionsDialog()
 void EditCompetitionsDialog::showEvent(QShowEvent *e)
 {
     m_competition_table_model->refresh();
+    m_competition_type_model->refresh();
     QDialog::showEvent(e);
 }
 

@@ -3,7 +3,7 @@
 
 RawSqlDataModel::RawSqlDataModel(QSqlDatabase & db):
     m_db(db),
-    m_sql_model(0, db)
+    m_sql_model(nullptr, db)
 {
 }
 

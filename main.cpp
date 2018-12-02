@@ -8,6 +8,7 @@
 
 #include "CompetitionSqlModel.h"
 #include "CompetitionSqlTableModel.h"
+#include "CompetitionTypeSqlModel.h"
 #include "GymnastSqlModel.h"
 #include "GymnastSqlTableModel.h"
 #include "LevelSqlTableModel.h"
@@ -30,11 +31,12 @@
 void create_edit_competitions_dialog(
         MainWindow * main_window,
         const ICompetitionModelPtr & competition_model,
-        const ICompetitionTableModelPtr & compettition_table_model)
+        const ICompetitionTableModelPtr & compettition_table_model,
+        const std::shared_ptr<ICompetitionTypeModel> & competition_type_model)
 {
     // create edit competition dialog
     auto edit_competitions_dialog =
-            new EditCompetitionsDialog{competition_model, compettition_table_model, main_window};
+            new EditCompetitionsDialog{competition_model, compettition_table_model, competition_type_model, main_window};
     edit_competitions_dialog->setModal(true);
     QObject::connect(main_window, SIGNAL(open_edit_competitions_dialog()),
                      edit_competitions_dialog, SLOT(show()));
@@ -131,7 +133,8 @@ int main(int argc, char *argv[])
     create_edit_competitions_dialog(
                 &main_window,
                 std::make_shared<CompetitionSqlModel>(db),
-                std::make_shared<CompetitionSqlTableModel>(db));
+                std::make_shared<CompetitionSqlTableModel>(db),
+                std::make_shared<CompetitionTypeSqlModel>(db));
     create_edit_gymnasts_dialog(
                 &main_window,
                 competition_model,

@@ -2,6 +2,7 @@
 
 #include "ICompetitionModel.h"
 #include "ICompetitionTableModel.h"
+#include "ICompetitionTypeModel.h"
 #include <QDialog>
 
 namespace Ui {
@@ -16,6 +17,7 @@ public:
     explicit EditCompetitionsDialog(
             const ICompetitionModelPtr & competition_model,
             const ICompetitionTableModelPtr & competition_table_model,
+            const std::shared_ptr<ICompetitionTypeModel> & competition_type_model,
             QWidget *parent = nullptr);
     ~EditCompetitionsDialog();
 
@@ -34,5 +36,6 @@ private:
     Ui::EditCompetitionsDialog * ui;
     ICompetitionModelPtr m_competition_model;
     ICompetitionTableModelPtr m_competition_table_model;
+    std::shared_ptr<ICompetitionTypeModel> m_competition_type_model;
 
 };

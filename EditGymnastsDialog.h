@@ -4,7 +4,9 @@
 #include "ICompetitionModel.h"
 #include "IGymnastTableModel.h"
 #include "ILevelTableModel.h"
+
 #include <QDialog>
+#include <memory>
 
 namespace Ui {
 class EditGymnastsDialog;

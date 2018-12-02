@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     ScoreFocusNavigator.cpp \
     ImportGymnastsDialog.cpp \
     PrintUtility.cpp \
-    gui_state_machine/GuiStateServer.cpp
+    gui_state_machine/GuiStateServer.cpp \
+    CompetitionTypeSqlModel.cpp
 
 HEADERS  += MainWindow.h \
     LoginDialog.h \
@@ -91,7 +92,9 @@ HEADERS  += MainWindow.h \
     gui_state_machine/GuiState.h \
     gui_state_machine/GuiStateServer.h \
     gui_state_machine/IGuiStateObserver.h \
-    gui_state_machine/UninitializedGuiScope.h
+    gui_state_machine/UninitializedGuiScope.h \
+    ICompetitionTypeModel.h \
+    CompetitionTypeSqlModel.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \
