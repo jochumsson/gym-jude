@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     }
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setDatabaseName("gym_db");
+    db.setDatabaseName("gym_db_2");
     db.setPort(3306);
 
     // create main window

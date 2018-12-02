@@ -2,6 +2,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QSqlError>
 #include <QDebug>
 #include <boost/optional.hpp>
 #include <set>
@@ -31,7 +32,11 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
                               "WHERE competition_name=:competition_name_bind_value");
         gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
     }
-    gymnast_query.exec();
+
+    if (not gymnast_query.exec())
+    {
+        qWarning() << "SQL score calculation failed with error: " << gymnast_query.lastError();
+    }
 
     ResultTypeInfo result_type_info = m_result_type_model->get_result_type_info(result_type);
     while(gymnast_query.next())
@@ -46,7 +51,7 @@ IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
         gymnast_score_query.prepare("SELECT apparatus, final_score, d_score, d_penalty, base_score FROM competition_score_cop_view "
                                     "WHERE competition_name=:competition_name_bind_value "
                                     "AND gymnast_id=:gymnast_id_bind_value "
-                                    "AND apparatus IN(SELECT apparatus FROM result WHERE result_type=:result_type_bind_value)");
+                                    "AND apparatus IN(SELECT apparatus_name FROM result_apparatus WHERE result_type=:result_type_bind_value)");
         gymnast_score_query.bindValue(":competition_name_bind_value", competition_info.name);
         gymnast_score_query.bindValue(":gymnast_id_bind_value", gymnast_results.gymnast_id);
         gymnast_score_query.bindValue(":result_type_bind_value", result_type_info.result_type_string);

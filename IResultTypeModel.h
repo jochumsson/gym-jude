@@ -30,6 +30,7 @@ public:
     virtual QAbstractTableModel * get_qt_model() = 0;
 
     virtual void refresh() = 0;
+    virtual void set_competition(const CompetitionInfo & competition_info)  = 0;
 
     virtual ResultTypeInfo get_result_type(int index) const = 0;
 

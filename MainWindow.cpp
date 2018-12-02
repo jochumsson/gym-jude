@@ -509,6 +509,12 @@ void MainWindow::competition_changed()
     m_raw_data_model->set_competition(selected_competition);
     m_raw_data_model->refresh();
 
+    m_apparatus_table_model->set_competition(competition_info);
+    m_raw_data_model->refresh();
+
+    m_result_type_model->set_competition(competition_info);
+    m_result_type_model->refresh();
+
     // update the enabled state when all selections have taken place
     init_enabled_state();
 

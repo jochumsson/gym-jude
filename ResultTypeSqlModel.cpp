@@ -17,8 +17,16 @@ QAbstractTableModel * ResultTypeSqlModel::get_qt_model()
 
 void ResultTypeSqlModel::refresh()
 {
+    if (m_selected_competition_info.type == CompetitionType::Unknown)
+    {
+        // the model has not been initialized with a competition type
+        return;
+    }
+
     QSqlQuery sql_query(m_db);
-    sql_query.prepare("SELECT DISTINCT result_type FROM result");
+    sql_query.prepare("SELECT DISTINCT result_type FROM competition_type_result_apparatus WHERE competition_type=:competition_type_bind_value");
+    sql_query.bindValue(":competition_type_bind_value", competitionTypeToStr(m_selected_competition_info.type));
+
     if (not sql_query.exec())
     {
         qWarning() << "ResqulTypeSqlModel failed with error: " << sql_query.lastError().text();
@@ -48,6 +56,11 @@ void ResultTypeSqlModel::refresh()
     }
 
     endResetModel();
+}
+
+void ResultTypeSqlModel::set_competition(const CompetitionInfo & competition_info)
+{
+    m_selected_competition_info = competition_info;
 }
 
 ResultTypeInfo ResultTypeSqlModel::get_result_type(int index) const

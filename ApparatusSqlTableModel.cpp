@@ -16,8 +16,16 @@ QAbstractTableModel * ApparatusSqlTableModel::get_qt_model()
 
 void ApparatusSqlTableModel::refresh()
 {
+    if (m_competition_info.type == CompetitionType::Unknown)
+    {
+        // the model has not been initialized with a selected competition
+        return;
+    }
+
     beginResetModel();
-    m_sql_model_data.prepare("SELECT apparatus_name FROM apparatus");
+
+    m_sql_model_data.prepare("SELECT DISTINCT apparatus_name FROM competition_type_result_apparatus WHERE competition_type=:competition_type_bind_value");
+    m_sql_model_data.bindValue(":competition_type_bind_value", competitionTypeToStr(m_competition_info.type));
 
     if (not m_sql_model_data.exec())
     {
@@ -27,6 +35,11 @@ void ApparatusSqlTableModel::refresh()
     }
 
     endResetModel();
+}
+
+void ApparatusSqlTableModel::set_competition(const CompetitionInfo & competition_info)
+{
+    m_competition_info = competition_info;
 }
 
 QString ApparatusSqlTableModel::get_apparatus_id(int index) const

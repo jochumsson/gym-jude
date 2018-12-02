@@ -17,6 +17,7 @@ public:
     QAbstractTableModel * get_qt_model() final;
 
     void refresh() final;
+    void set_competition(const CompetitionInfo & competition_info) final;
 
     ResultTypeInfo get_result_type(int index) const final;
 
@@ -36,6 +37,7 @@ private:
     QSqlDatabase & m_db;
     Translator m_translator;
     std::vector<ResultTypeInfo> m_level_result_types;
+    CompetitionInfo m_selected_competition_info;
     boost::optional<int> m_selected_level;
 
 };

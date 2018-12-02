@@ -57,9 +57,13 @@ void ScoreSqlTableModel::refresh()
 
 void ScoreSqlTableModel::recalculate_score()
 {
-    // no need for recalculation for level less than five
-    if (m_selected_level < 5)
+    if (not m_selected_competition_info ||
+            ((*m_selected_competition_info).type == CompetitionType::SvenskaStegserierna &&
+             m_selected_level < 5))
+    {
+        // no need for recalculation for level less than five
         return;
+    }
 
     for (int row_index = 0; row_index < m_data_query.size(); ++row_index)
     {

@@ -17,6 +17,7 @@ public:
     QAbstractTableModel * get_qt_model() final;
 
     void refresh() final;
+    void set_competition(const CompetitionInfo & competition_info) final;
 
     QString get_apparatus_id(int index) const final;
 
@@ -28,6 +29,8 @@ public:
 
 private:
     mutable QSqlQuery m_sql_model_data;
+    CompetitionInfo m_competition_info;
     Translator m_translator;
+
 };
 
