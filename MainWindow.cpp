@@ -664,24 +664,11 @@ void MainWindow::results_level_changed()
     // avoid multiple updates
     UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
 
-    // disable d value selection for level < 5
     const bool disable_check_box = (level && *level < 5);
     ui->score_details_check_box->setDisabled(disable_check_box);
 
-    if (m_result_type_model->get_selected_level() != level)
-    {
-        const int current_result_type_index = ui->results_type_comboBox->currentIndex();
-        m_result_type_model->set_level(level);
-        m_result_type_model->refresh();
-        if (m_result_item_model->get_qt_model()->rowCount() >= current_result_type_index)
-        {
-            ui->results_type_comboBox->setCurrentIndex(current_result_type_index);
-        }
-    }
-
     m_result_item_model->set_level(level);
     m_result_item_model->refresh();
-
     update_results_tab();
 }
 

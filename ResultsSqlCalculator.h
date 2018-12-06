@@ -12,15 +12,22 @@ public:
     {
     }
 
-    ResultsMap calculate_results(const CompetitionInfo & competition_info,
-            const boost::optional<int> & level,
-            const ResultType result_type) final;
-
-    TeamResultsMap calculate_team_results(
+    ResultsMap calculate_results(
             const CompetitionInfo & competition_info,
-            const ResultType result_type) final;
+            const boost::optional<int> & level,
+            const ResultTypeInfo result_type) final;
+
+    TeamResultsMap calculate_team_results(const CompetitionInfo & competition_info) final;
 
 private:
+    ResultsMap calculate_all_around_results(
+            const CompetitionInfo & competition_info,
+            const boost::optional<int> & level);
+    ResultsMap calculate_apparatus_results(
+            const CompetitionInfo & competition_info,
+            const boost::optional<int> & level,
+            const ResultTypeInfo result_type);
+
     QSqlDatabase & m_db;
     IResultTypeModelPtr m_result_type_model;
 };

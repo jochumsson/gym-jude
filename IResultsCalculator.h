@@ -20,13 +20,10 @@ public:
     virtual ResultsMap calculate_results(
             const CompetitionInfo & competition_info,
             const boost::optional<int> & level,
-            const ResultType result_type) = 0;
+            const ResultTypeInfo result_type) = 0;
 
     using TeamResultsMap = std::multimap< double, TeamResults, std::greater<double> >;
-
-    virtual TeamResultsMap calculate_team_results(
-            const CompetitionInfo & competition_info,
-            const ResultType result_type) = 0;
+    virtual TeamResultsMap calculate_team_results(const CompetitionInfo & competition_info) = 0;
 
 };
 

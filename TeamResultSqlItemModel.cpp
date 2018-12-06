@@ -45,10 +45,7 @@ const ITeamResultItemModel::TeamResultsMap &TeamResultSqlItemModel::get_current_
 
 void TeamResultSqlItemModel::update_results()
 {
-    m_current_results =
-            m_results_calculator->calculate_team_results(
-                *m_current_competition,
-                ResultType::AllArround);
+    m_current_results = m_results_calculator->calculate_team_results(*m_current_competition);
 
     // update the model
     m_model.clear();

@@ -19,25 +19,20 @@ public:
     void refresh() final;
     void set_competition(const CompetitionInfo & competition_info) final;
 
-    ResultTypeInfo get_result_type(int index) const final;
-
-    boost::optional<int> get_selected_level() const final;
-    void set_level(boost::optional<int> level) final;
-
-    ResultTypeInfo get_result_type_info(const ResultType result_type) const final;
+    ResultTypeInfo get_result_type(unsigned int visibility_index) const final;
+    ResultTypeInfo get_result_type_info(const QString & result_type) const final;
+    std::vector<ResultTypeInfo> get_visible_result_types() const final;
+    std::vector<ResultTypeInfo> get_all_result_types() const final;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const final;
     int columnCount(const QModelIndex &parent = QModelIndex()) const final;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const final;
 
 private:
-    static ResultType result_type_from_string(const QString & result_type_string);
-    static QString string_from_result_type(const ResultType result_type);
-
     QSqlDatabase & m_db;
     Translator m_translator;
-    std::vector<ResultTypeInfo> m_level_result_types;
+    std::vector<ResultTypeInfo> m_visible_result_types;
+    std::vector<ResultTypeInfo> m_all_result_types;
     CompetitionInfo m_selected_competition_info;
-    boost::optional<int> m_selected_level;
 
 };

@@ -24,7 +24,7 @@ void ResultTypeSqlModel::refresh()
     }
 
     QSqlQuery sql_query(m_db);
-    sql_query.prepare("SELECT DISTINCT result_type FROM competition_type_result_apparatus WHERE competition_type=:competition_type_bind_value");
+    sql_query.prepare("SELECT result_type, all_around_result, apparatus_result, include_in_all_around FROM competition_type_result WHERE competition_type=:competition_type_bind_value");
     sql_query.bindValue(":competition_type_bind_value", competitionTypeToStr(m_selected_competition_info.type));
 
     if (not sql_query.exec())
@@ -33,25 +33,33 @@ void ResultTypeSqlModel::refresh()
     }
 
     beginResetModel();
-    m_level_result_types.clear();
+    m_visible_result_types.clear();
+    m_all_result_types.clear();
 
     while(sql_query.next())
     {
-        const QSqlField & field = sql_query.record().field("result_type");
-        if (field.isNull() || not field.isValid())
+        const QSqlField & result_type_field = sql_query.record().field("result_type");
+        const QSqlField & all_around_result_field = sql_query.record().field("all_around_result");
+        const QSqlField & apparatus_result_field = sql_query.record().field("apparatus_result");
+        const QSqlField & include_in_all_around_field = sql_query.record().field("include_in_all_around");
+        if (not result_type_field.isValid() ||
+                not all_around_result_field.isValid() ||
+                not apparatus_result_field.isValid() ||
+                not include_in_all_around_field.isValid())
         {
-            qWarning() << "Invalid field result_type in result table";
+            qWarning() << "Invalid result type record";
             continue;
         }
 
-        const QString result_type_string = field.value().toString();
-        const ResultType result_type = result_type_from_string(result_type_string);
-        if (not m_selected_level ||
-                *m_selected_level > 4 ||
-                result_type == ResultType::AllArround)
+        const QString result_type_string = result_type_field.value().toString();
+        const bool all_around_result = all_around_result_field.value().toBool();
+        const bool apparatus_result = apparatus_result_field.value().toBool();
+        const bool include_in_all_around = include_in_all_around_field.value().toBool();
+        const ResultTypeInfo result_type_info = {result_type_string, apparatus_result, all_around_result, include_in_all_around};
+        m_all_result_types.push_back(result_type_info);
+        if (all_around_result || apparatus_result)
         {
-            // level < 5 only supports all arround competitions
-            m_level_result_types.push_back({result_type, result_type_string});
+            m_visible_result_types.push_back(result_type_info);
         }
     }
 
@@ -63,31 +71,37 @@ void ResultTypeSqlModel::set_competition(const CompetitionInfo & competition_inf
     m_selected_competition_info = competition_info;
 }
 
-ResultTypeInfo ResultTypeSqlModel::get_result_type(int index) const
+ResultTypeInfo ResultTypeSqlModel::get_result_type(unsigned int visibility_index) const
 {
-    if (static_cast<unsigned int>(index) < m_level_result_types.size())
-        return m_level_result_types[static_cast<unsigned int>(index)];
+    if (visibility_index < m_visible_result_types.size())
+        return m_visible_result_types[visibility_index];
     return {};
 }
 
-boost::optional<int> ResultTypeSqlModel::get_selected_level() const
+ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const QString & result_type) const
 {
-    return m_selected_level;
+    for (auto result_type_it: m_all_result_types)
+    {
+        if (result_type_it.result_type_string == result_type)
+            return result_type_it;
+    }
+
+    return {};
 }
 
-void ResultTypeSqlModel::set_level(boost::optional<int> level)
+std::vector<ResultTypeInfo> ResultTypeSqlModel::get_visible_result_types() const
 {
-    m_selected_level = level;
+    return m_visible_result_types;
 }
 
-ResultTypeInfo ResultTypeSqlModel::get_result_type_info(const ResultType result_type) const
+std::vector<ResultTypeInfo> ResultTypeSqlModel::get_all_result_types() const
 {
-    return {result_type, string_from_result_type(result_type)};
+    return m_all_result_types;
 }
 
 int ResultTypeSqlModel::rowCount(const QModelIndex &) const
 {
-    return static_cast<int>(m_level_result_types.size());
+    return static_cast<int>(m_visible_result_types.size());
 }
 
 int ResultTypeSqlModel::columnCount(const QModelIndex &) const
@@ -100,62 +114,12 @@ QVariant ResultTypeSqlModel::data(const QModelIndex &index, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
 
-    if (static_cast<unsigned int>(index.row()) < m_level_result_types.size())
+    if (static_cast<unsigned int>(index.row()) < m_visible_result_types.size())
     {
         const auto & result_type_str =
-                m_level_result_types[static_cast<unsigned int>(index.row())].result_type_string;
+                m_visible_result_types[static_cast<unsigned int>(index.row())].result_type_string;
         return m_translator.translate(result_type_str);
     }
 
     return QVariant();
-}
-
-ResultType ResultTypeSqlModel::result_type_from_string(const QString & result_type_string)
-{
-    if (result_type_string == "Balance Beam")
-    {
-        return ResultType::BalanceBeam;
-    }
-    else if (result_type_string == "Floor")
-    {
-        return ResultType::Floor;
-    }
-    else if (result_type_string == "Jump")
-    {
-        return ResultType::Jump;
-    }
-    else if (result_type_string == "Uneven Bars")
-    {
-        return ResultType::UnevenBars;
-    }
-    else if (result_type_string == "WAG All Arround")
-    {
-        return ResultType::AllArround;
-    }
-    else
-    {
-        qWarning() << "Undefined result type: " << result_type_string;
-        return ResultType::Unknown;
-    }
-}
-
-QString ResultTypeSqlModel::string_from_result_type(const ResultType result_type)
-{
-    switch(result_type)
-    {
-    case ResultType::BalanceBeam:
-        return "Balance Beam";
-    case ResultType::Floor:
-        return "Floor";
-    case ResultType::Jump:
-        return "Jump";
-    case ResultType::UnevenBars:
-        return "Uneven Bars";
-    case ResultType::AllArround:
-        return "WAG All Arround";
-    case ResultType::Unknown:
-        return "";
-    }
-
-    return "";
 }

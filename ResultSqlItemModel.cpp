@@ -103,7 +103,7 @@ void ResultSqlItemModel::publish_results() const
 void ResultSqlItemModel::remove_publication() const
 {
     if (not m_current_competition ||
-            m_result_type_info.result_type == ResultType::Unknown ||
+            m_result_type_info.result_type_string == QString() ||
             ((*m_current_competition).type == CompetitionType::SvenskaStegserierna && not m_current_level))
         return;
 
@@ -208,11 +208,10 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
     return true;
 }
 
-
 void ResultSqlItemModel::update_results()
 {
     if (not m_current_competition ||
-            m_result_type_info.result_type == ResultType::Unknown ) {
+            m_result_type_info.result_type_string == QString() ) {
         qDebug() << "Failed to update results with incomplete selections";
         return;
     }
@@ -221,7 +220,7 @@ void ResultSqlItemModel::update_results()
             m_results_calculator->calculate_results(
                 *m_current_competition,
                 m_current_level,
-                m_result_type_info.result_type);
+                m_result_type_info);
     m_model.clear();
     for (ResultsMap::iterator it = (*m_current_results).begin(); it != (*m_current_results).end(); ++it)
     {

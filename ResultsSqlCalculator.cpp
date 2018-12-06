@@ -6,132 +6,30 @@
 #include <QDebug>
 #include <boost/optional.hpp>
 #include <set>
-
-static const QString JUMP_NAME = "Jump";
-static const QString JUMP_1_NAME = "Jump 1";
-static const QString JUMP_2_NAME = "Jump 2";
+#include <unordered_map>
 
 IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
         const CompetitionInfo & competition_info,
         const boost::optional<int> & level,
-        const ResultType result_type)
+        const ResultTypeInfo result_type)
 {
-    ResultsMap results_map;
-
-    QSqlQuery gymnast_query(m_db);
-    if (level)
+    if (result_type.all_around_result)
     {
-        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
-                              "WHERE competition_name=:competition_name_bind_value AND level=:level_bind_value");
-        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
-        gymnast_query.bindValue(":level_bind_value", *level);
+        return calculate_all_around_results(competition_info, level);
     }
     else
     {
-        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
-                              "WHERE competition_name=:competition_name_bind_value");
-        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
+        return calculate_apparatus_results(competition_info, level, result_type);
     }
-
-    if (not gymnast_query.exec())
-    {
-        qWarning() << "SQL score calculation failed with error: " << gymnast_query.lastError();
-    }
-
-    ResultTypeInfo result_type_info = m_result_type_model->get_result_type_info(result_type);
-    while(gymnast_query.next())
-    {
-        GymnastResults gymnast_results;
-        gymnast_results.gymnast_name = gymnast_query.record().field(0).value().toString().trimmed();
-        gymnast_results.gymnast_id = gymnast_query.record().field(1).value().toString().trimmed();
-        gymnast_results.gymnast_club = gymnast_query.record().field(2).value().toString().trimmed();
-        gymnast_results.gymnast_team = gymnast_query.record().field(3).value().toString().trimmed();
-
-        QSqlQuery gymnast_score_query;
-        gymnast_score_query.prepare("SELECT apparatus, final_score, d_score, d_penalty, base_score FROM competition_score_cop_view "
-                                    "WHERE competition_name=:competition_name_bind_value "
-                                    "AND gymnast_id=:gymnast_id_bind_value "
-                                    "AND apparatus IN(SELECT apparatus_name FROM result_apparatus WHERE result_type=:result_type_bind_value)");
-        gymnast_score_query.bindValue(":competition_name_bind_value", competition_info.name);
-        gymnast_score_query.bindValue(":gymnast_id_bind_value", gymnast_results.gymnast_id);
-        gymnast_score_query.bindValue(":result_type_bind_value", result_type_info.result_type_string);
-        gymnast_score_query.exec();
-
-        bool add_jump_to_final_score = false;
-        while(gymnast_score_query.next())
-        {
-            const QString & apparatus = gymnast_score_query.record().field(0).value().toString();
-            const double final_score = gymnast_score_query.record().field(1).value().toDouble();
-
-            if (level == boost::none || *level > 4)
-            {
-                const double d_score = gymnast_score_query.record().field(2).value().toDouble();
-                const double d_penalty = gymnast_score_query.record().field(3).value().toDouble();
-                const double e_score = final_score - (d_score - d_penalty);
-
-                gymnast_results.apparatus_score[apparatus] = {final_score, true, d_score, d_penalty, e_score};
-            }
-            else
-            {
-                gymnast_results.apparatus_score[apparatus] = {final_score, false, 0.0, 0.0, 0.0};
-            }
-
-            if (apparatus != JUMP_1_NAME && apparatus != JUMP_2_NAME) // jump is added later
-            {
-                gymnast_results.final_results += final_score;
-            }
-            else
-            {
-                add_jump_to_final_score = true;
-            }
-        }
-
-        //add final mean value of Jump 1 and Jump 2 to final score
-        GymnastResults::ApparatusScore::iterator jump_1_score = gymnast_results.apparatus_score.find(JUMP_1_NAME);
-        GymnastResults::ApparatusScore::iterator jump_2_score = gymnast_results.apparatus_score.find(JUMP_2_NAME);
-
-        if (add_jump_to_final_score)
-        {
-            if(jump_1_score != gymnast_results.apparatus_score.end() &&
-                    jump_2_score != gymnast_results.apparatus_score.end())
-            {
-                const double jump_score =
-                        (jump_1_score->second.final_score + jump_2_score->second.final_score) / static_cast<double>(2);
-                gymnast_results.apparatus_score[JUMP_NAME] = {jump_score, false, 0.0, 0.0, 0.0};
-            }
-            else
-            {
-                gymnast_results.apparatus_score[JUMP_NAME] = {0.0, false, 0.0, 0.0, 0.0};
-            }
-
-
-            if (competition_info.type == CompetitionType::SvenskaPokalenserierna &&
-                    result_type_info.result_type == ResultType::AllArround)
-            {
-                // if pokalen and we are calculating score for multiple apparatus then only the first jump counts
-                gymnast_results.final_results += jump_1_score->second.final_score;
-            }
-            else
-            {
-                gymnast_results.final_results += gymnast_results.apparatus_score[JUMP_NAME].final_score;
-            }
-        }
-
-        results_map.insert(std::make_pair(gymnast_results.final_results, gymnast_results));
-    }
-
-    return results_map;
 }
 
 
 ResultsSqlCalculator::TeamResultsMap
-ResultsSqlCalculator::calculate_team_results(
-        const CompetitionInfo & competition_info,
-        const ResultType result_type)
+ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition_info)
 {
     // add all indevidual results to correct team results
     std::multimap< QString, TeamResults > team_results;
-    const auto & competition_level_results = calculate_results(competition_info, boost::none, result_type);
+    const auto & competition_level_results = calculate_all_around_results(competition_info, boost::none);
     for(auto indevidual_results: competition_level_results)
     {
         if (indevidual_results.second.gymnast_team.isEmpty())
@@ -189,13 +87,7 @@ ResultsSqlCalculator::calculate_team_results(
             }
 
             team_it.second.apparatus_score.insert(std::make_pair(apparatus_scores.first, apparatus_score));
-
-            if (apparatus_scores.first != JUMP_1_NAME &&
-                    apparatus_scores.first != JUMP_2_NAME)
-            {
-                // exclude Jump 1 and Jump 2 from the final score calculation
-                team_it.second.final_score += apparatus_score;
-            }
+            team_it.second.final_score += apparatus_score;
         }
     }
 
@@ -206,4 +98,118 @@ ResultsSqlCalculator::calculate_team_results(
     }
 
     return current_results;
+}
+
+
+ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_all_around_results(
+        const CompetitionInfo & competition_info,
+        const boost::optional<int> & level)
+{
+    auto results = m_result_type_model->get_all_result_types();
+
+    // get all apparatus results that should be part of the all around results
+    std::map<QString, GymnastResults> all_results;
+    for (auto apparatus_result_it: results)
+    {
+        if (apparatus_result_it.include_in_all_around)
+        {
+            auto apparatus_results = calculate_apparatus_results(competition_info, level, apparatus_result_it);
+            for(auto apparatus_result_it: apparatus_results)
+            {
+                auto & all_results_item = all_results[apparatus_result_it.second.gymnast_id];
+                if (all_results_item.gymnast_id != apparatus_result_it.second.gymnast_id)
+                {
+                    all_results_item.gymnast_name = apparatus_result_it.second.gymnast_name;
+                    all_results_item.gymnast_id = apparatus_result_it.second.gymnast_id;
+                    all_results_item.gymnast_club = apparatus_result_it.second.gymnast_club;
+                    all_results_item.gymnast_team = apparatus_result_it.second.gymnast_team;
+                }
+
+                all_results_item.apparatus_score.insert(
+                            apparatus_result_it.second.apparatus_score.begin(),
+                            apparatus_result_it.second.apparatus_score.end());
+                all_results_item.final_results += apparatus_result_it.second.final_results;
+            }
+        }
+    }
+
+    // calculate results for all apparatus results
+    ResultsMap result_map;
+    for (auto all_results_it: all_results)
+    {
+        result_map.insert(std::make_pair(all_results_it.second.final_results, all_results_it.second));
+    }
+    return result_map;
+}
+
+ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_results(
+        const CompetitionInfo & competition_info,
+        const boost::optional<int> & level,
+        const ResultTypeInfo result_type)
+{
+    ResultsMap results_map;
+
+    QSqlQuery gymnast_query(m_db);
+    if (level)
+    {
+        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
+                              "WHERE competition_name=:competition_name_bind_value AND level=:level_bind_value");
+        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
+        gymnast_query.bindValue(":level_bind_value", *level);
+    }
+    else
+    {
+        gymnast_query.prepare("SELECT gymnast_name, gymnast_id, gymnast_club, gymnast_team FROM competition_gymnast "
+                              "WHERE competition_name=:competition_name_bind_value");
+        gymnast_query.bindValue(":competition_name_bind_value", competition_info.name);
+    }
+
+    if (not gymnast_query.exec())
+    {
+        qWarning() << "SQL score calculation failed with error: " << gymnast_query.lastError();
+    }
+
+    while(gymnast_query.next())
+    {
+        GymnastResults gymnast_results;
+        gymnast_results.gymnast_name = gymnast_query.record().field(0).value().toString().trimmed();
+        gymnast_results.gymnast_id = gymnast_query.record().field(1).value().toString().trimmed();
+        gymnast_results.gymnast_club = gymnast_query.record().field(2).value().toString().trimmed();
+        gymnast_results.gymnast_team = gymnast_query.record().field(3).value().toString().trimmed();
+
+        QSqlQuery gymnast_score_query;
+        gymnast_score_query.prepare("SELECT apparatus, final_score, d_score, d_penalty, base_score FROM competition_score_cop_view "
+                                    "WHERE competition_name=:competition_name_bind_value "
+                                    "AND gymnast_id=:gymnast_id_bind_value "
+                                    "AND apparatus IN(SELECT apparatus_name FROM result_apparatus WHERE result_type=:result_type_bind_value)");
+        gymnast_score_query.bindValue(":competition_name_bind_value", competition_info.name);
+        gymnast_score_query.bindValue(":gymnast_id_bind_value", gymnast_results.gymnast_id);
+        gymnast_score_query.bindValue(":result_type_bind_value", result_type.result_type_string);
+        gymnast_score_query.exec();
+
+        while(gymnast_score_query.next())
+        {
+            const QString & apparatus = gymnast_score_query.record().field(0).value().toString();
+            const double final_score = gymnast_score_query.record().field(1).value().toDouble();
+
+            if (level == boost::none || *level > 4)
+            {
+                const double d_score = gymnast_score_query.record().field(2).value().toDouble();
+                const double d_penalty = gymnast_score_query.record().field(3).value().toDouble();
+                const double e_score = final_score - (d_score - d_penalty);
+                gymnast_results.apparatus_score[apparatus] = {final_score, true, d_score, d_penalty, e_score};
+            }
+            else
+            {
+                gymnast_results.apparatus_score[apparatus] = {final_score, false, 0.0, 0.0, 0.0};
+            }
+
+            gymnast_results.final_results += final_score;
+        }
+
+        gymnast_results.final_results = gymnast_results.final_results / gymnast_score_query.size();
+        results_map.insert(std::make_pair(gymnast_results.final_results, gymnast_results));
+    }
+
+    return results_map;
 }
