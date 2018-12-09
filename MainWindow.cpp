@@ -374,65 +374,72 @@ void MainWindow::export_team_results()
 {
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setNameFilter(tr("Participient files (*.csv)"));
+    dialog.setNameFilter(tr("Gymnastic Team Results CSV (*.csv)"));
     dialog.setDirectory(QDir::home());
-    if (dialog.exec())
+    dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
+
+
+    const bool file_dialog_open = dialog.exec();
+    if (!file_dialog_open ||
+            dialog.selectedFiles().empty())
     {
-        QString file_name = dialog.selectedFiles()[0];
-        QFile file(file_name);
-        if (!file.open(QIODevice::ReadWrite))
-        {
-            QMessageBox msg_box;
-            msg_box.setText("Failed to open file for writing");
-            msg_box.setStandardButtons(QMessageBox::Ok);
-            msg_box.exec();
-            return;
-        }
-
-        ITeamResultItemModel::TeamResultsMap current_team_results;
-        try {
-            current_team_results = m_team_result_item_model->get_current_results();
-        }
-        catch (IncompleteTeamResults & e)
-        {
-            qWarning() << "Failed to export team results with error: " << e.what();
-            return;
-        }
-
-        QTextStream stream(&file);
-
-        // header
-        if(current_team_results.size() > 0)
-        {
-            auto team_res_it = current_team_results.begin();
-            stream << "Team Name" << ",Club" << ",Team Results";
-            for(auto res_it = team_res_it->second.team_results.begin();
-                res_it != team_res_it->second.team_results.end();
-                ++res_it)
-            {
-                stream << "," << team_res_it->first;
-            }
-            stream << "\n";
-        }
-
-        for (const auto & team_res_it: current_team_results)
-        {
-            stream << team_res_it.second.team_name.trimmed();
-            stream << ",";
-            stream << team_res_it.second.team_club.trimmed();
-            stream << ",";
-            stream << team_res_it.second.final_score;
-            for(auto res_it = team_res_it.second.team_results.begin();
-                res_it != team_res_it.second.team_results.end();
-                ++res_it)
-            {
-                stream <<"," << res_it->second;
-            }
-            stream << "\n";
-        }
-
-        file.close();
+        return;
     }
+
+    QString file_name = dialog.selectedFiles()[0];
+    QFile file(file_name);
+    if (!file.open(QIODevice::ReadWrite))
+    {
+        QMessageBox msg_box;
+        msg_box.setText("Failed to open file for writing");
+        msg_box.setStandardButtons(QMessageBox::Ok);
+        msg_box.exec();
+        return;
+    }
+
+    ITeamResultItemModel::TeamResultsMap current_team_results;
+    try {
+        current_team_results = m_team_result_item_model->get_current_results();
+    }
+    catch (IncompleteTeamResults & e)
+    {
+        qWarning() << "Failed to export team results with error: " << e.what();
+        return;
+    }
+
+    QTextStream stream(&file);
+
+    // header
+    if(current_team_results.size() > 0)
+    {
+        auto team_res_it = current_team_results.begin();
+        stream << "Team Name" << ",Club" << ",Team Results";
+        for(auto res_it = team_res_it->second.team_results.begin();
+            res_it != team_res_it->second.team_results.end();
+            ++res_it)
+        {
+            stream << "," << res_it->first;
+        }
+        stream << "\n";
+    }
+
+    for (const auto & team_res_it: current_team_results)
+    {
+        stream << team_res_it.second.team_name.trimmed();
+        stream << ",";
+        stream << team_res_it.second.team_club.trimmed();
+        stream << ",";
+        stream << team_res_it.second.final_score;
+        for(auto res_it = team_res_it.second.team_results.begin();
+            res_it != team_res_it.second.team_results.end();
+            ++res_it)
+        {
+            stream <<"," << res_it->second;
+        }
+        stream << "\n";
+    }
+
+    file.close();
 }
 
 void MainWindow::current_tab_changed(int current_index)
