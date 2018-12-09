@@ -6,18 +6,17 @@
 #include <QHeaderView>
 
 void PrintUtility::print_results(
-        QWidget * parent,
         const CompetitionInfo & comptetition_info,
         const boost::optional<QString> & level,
         const QString & results_type,
         QAbstractItemModel * results_item_model)
 {
     QPrinter printer;
-    QPrintDialog * dialog = new QPrintDialog(&printer, parent);
+    QPrintDialog dialog(&printer);
     QString print_info = QObject::tr("Print Results");
     print_info += ": " + results_type;
-    dialog->setWindowTitle(print_info);
-    if (dialog->exec() != QDialog::Accepted)
+    dialog.setWindowTitle(print_info);
+    if (dialog.exec() != QDialog::Accepted)
         return;
 
     auto header = create_results_header(
@@ -35,9 +34,9 @@ std::unique_ptr<QWidget> PrintUtility::create_results_header(
         const QString & results_type)
 {
     auto print_header_label = std::make_unique<QLabel>();
-    print_header_label->setFixedSize(printer.pageRect().width() - 2 * page_margin, 100);
+    print_header_label->setFixedSize(printer.pageRect().width() - 2 * page_margin_x, 100);
     print_header_label->setAlignment(Qt::AlignCenter);
-    print_header_label->setMargin(page_margin);
+    print_header_label->setMargin(page_margin_x);
     print_header_label->setFont({"Arial", 18, QFont::Bold});
     print_header_label->setStyleSheet("QLabel { background-color : white;}");
     QString header_text = competition_name;
@@ -62,7 +61,8 @@ void PrintUtility::print_results_table(
         std::unique_ptr<QWidget> header,
         QAbstractItemModel * results_item_model)
 {
-    QPainter painter(&printer);
+    QPainter painter;
+    painter.begin(&printer);
     painter.setBackground(QBrush(Qt::white));
 
     QTableView printTableView;
@@ -101,11 +101,11 @@ void PrintUtility::print_results_table(
     double print_to_pos = printTableView.horizontalHeader()->height();
     do {
         // print the header
-        header->render(&painter, {page_margin, page_margin});
+        header->render(&painter, {page_margin_x, page_margin_y});
 
         const double page_height = printer.pageRect().height();
         while(printed_rows < rows &&
-              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (page_margin + header->height() + page_margin))
+              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (page_margin_y + header->height() + page_margin_y))
         {
             print_to_pos += printTableView.rowHeight(printed_rows);
             ++printed_rows;
@@ -114,9 +114,10 @@ void PrintUtility::print_results_table(
         // print the rows that fit to this page
         printTableView.render(
                     &painter,
-                    QPoint(page_margin, page_margin + header->height()),
+                    QPoint(page_margin_x, page_margin_y + header->height()),
                     QRegion(0, print_from_pos, width, print_to_pos-print_from_pos));
         print_from_pos += print_to_pos;
     }
     while (printed_rows < rows && printer.newPage());
+    painter.end();
 }

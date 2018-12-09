@@ -243,7 +243,6 @@ void MainWindow::print_results()
     }
 
     PrintUtility::print_results(
-                this,
                 competition_info,
                 level,
                 ui->results_type_comboBox->currentText(),
@@ -260,7 +259,6 @@ void MainWindow::print_team_results()
     }
 
     PrintUtility::print_results(
-                this,
                 competition_info,
                 boost::none,
                 "Team Results",

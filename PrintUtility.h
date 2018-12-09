@@ -13,14 +13,14 @@ class PrintUtility
 {
 public:
     static void print_results(
-            QWidget * parent,
             const CompetitionInfo & comptetition_info,
             const boost::optional<QString> & level,
             const QString & results_type,
             QAbstractItemModel * results_item_model);
 
 private:
-    static const int page_margin = 10;
+    static const int page_margin_y = 100;
+    static const int page_margin_x = 10;
 
     static std::unique_ptr<QWidget> create_results_header(
             QPrinter & printer,
