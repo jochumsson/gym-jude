@@ -188,14 +188,16 @@ void MainWindow::update_score_tab()
 
 void MainWindow::update_results_tab()
 {    
-    UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+    {
+        UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
 
-    if (ui->results_level_combo_box->currentIndex() < 0)
-        ui->results_level_combo_box->setCurrentIndex(0);
-    if (ui->results_type_comboBox->currentIndex() < 0)
-        ui->results_type_comboBox->setCurrentIndex(0);
+        if (ui->results_level_combo_box->currentIndex() < 0)
+            ui->results_level_combo_box->setCurrentIndex(0);
+        if (ui->results_type_comboBox->currentIndex() < 0)
+            ui->results_type_comboBox->setCurrentIndex(0);
 
-    m_result_item_model->refresh();
+        m_result_item_model->refresh();
+    }
     update_results_publish_gui();
 }
 
@@ -667,23 +669,29 @@ void MainWindow::results_level_changed()
     }
 
     // avoid multiple updates
-    UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+    {
+        UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
 
-    const bool disable_check_box = (level && *level < 5);
-    ui->score_details_check_box->setDisabled(disable_check_box);
+        const bool disable_check_box = (level && *level < 5);
+        ui->score_details_check_box->setDisabled(disable_check_box);
 
-    m_result_item_model->set_level(level);
-    m_result_item_model->refresh();
-    update_results_tab();
+        m_result_item_model->set_level(level);
+        m_result_item_model->refresh();
+    }
+
+    update_results_publish_gui();
 }
 
 void MainWindow::show_score_details_changed()
 {
-    const bool show_score_details = ui->score_details_check_box->isChecked();
-    m_result_item_model->set_show_score_details(show_score_details);
-    m_result_item_model->refresh();
+    {
+        UninitializedGuiScope uninitialized_gui_scope(m_gui_state_server);
+        const bool show_score_details = ui->score_details_check_box->isChecked();
+        m_result_item_model->set_show_score_details(show_score_details);
+        m_result_item_model->refresh();
+    }
 
-    update_results_tab();
+    update_results_publish_gui();
 }
 
 void MainWindow::result_type_changed()
@@ -695,12 +703,15 @@ void MainWindow::result_type_changed()
         return;
     }
 
-    UninitializedGuiScope uninitialized_gui_scop(m_gui_state_server);
-    const auto & result_type =
-            m_result_type_model->get_result_type(static_cast<unsigned int>(index));
-    m_result_item_model->set_result_type(result_type);
-    m_result_item_model->refresh();
-    update_results_tab();
+    {
+        UninitializedGuiScope uninitialized_gui_scop(m_gui_state_server);
+        const auto & result_type =
+                m_result_type_model->get_result_type(static_cast<unsigned int>(index));
+        m_result_item_model->set_result_type(result_type);
+        m_result_item_model->refresh();
+    }
+
+    update_results_publish_gui();
 }
 
 void MainWindow::publish_results()
@@ -748,16 +759,27 @@ void MainWindow::init_score_tab()
 
 void MainWindow::init_results_tab()
 {
-    // same model as used for score, thus refresh is not needed
-    ui->results_level_combo_box->setCurrentIndex(0);
+    {
+        UninitializedGuiScope uninitialized_gui_scop(m_gui_state_server);
 
-    m_result_type_model->refresh();
-    ui->results_type_comboBox->setCurrentIndex(0);
+        // same model as used for score, thus refresh is not needed
+        ui->results_level_combo_box->setCurrentIndex(0);
 
-    // trigger intial update
-    show_score_details_changed();
+        m_result_type_model->refresh();
+        ui->results_type_comboBox->setCurrentIndex(0);
 
-    update_results_tab();
+        // trigger intial update
+        show_score_details_changed();
+
+        if (ui->results_level_combo_box->currentIndex() < 0)
+            ui->results_level_combo_box->setCurrentIndex(0);
+        if (ui->results_type_comboBox->currentIndex() < 0)
+            ui->results_type_comboBox->setCurrentIndex(0);
+
+        m_result_item_model->refresh();
+    }
+
+    update_results_publish_gui();
 }
 
 void MainWindow::init_current_tab(TabInfo::GymTab current_tab)

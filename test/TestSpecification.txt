@@ -1,22 +1,27 @@
 Functional Tests:
 
 Calculate Score:
-- Calculate Score, Svenska Stegserierna - level < 5 - Apparatus Results
-- Calculate Score, Svenska Stegserierna - level < 5 - All Around Results
-- Calculate Score, Svenska Stegserierna - level > 4 - Apparatus Results
-- Calculate Score, Svenska Stegserierna - level > 4 - All Around Results
-- Calculate Score, != Svenska Stegserierna - Apparatus Results
-- Calculate Score, != Svenska Stegserierna - All Around Results
-- Calculate Score, Team Competition
+- Calculate Score, Svenska Stegserierna - level < 5 - Apparatus Results		- OK
+- Calculate Score, Svenska Stegserierna - level < 5 - All Around Results	- OK
+- Calculate Score, Svenska Stegserierna - level > 4 - Apparatus Results		- OK
+- Calculate Score, Svenska Stegserierna - level > 4 - All Around Results	- OK
+- Calculate Score, != Svenska Stegserierna - Apparatus Results                  - OK
+- Calculate Score, != Svenska Stegserierna - All Around Results                 - OK
+- Calculate Score, Team Competition                                             - OK
 
 View Results:
-- View results, Svenska Stegserierna - level < 5 - Apparatus Results
-- View results, Svenska Stegserierna - level < 5 - All Around Results
-- View results, Svenska Stegserierna - level > 4 - Apparatus Results
-- View results, Svenska Stegserierna - level > 4 - All Around Results
-- View results, != Svenska Stegserierna - Apparatus Results
-- View results, != Svenska Stegserierna - All Around Results
-- View results, Team Competition
+- View results, Svenska Stegserierna - level < 5 - Apparatus Results		- OK
+- View results, Svenska Stegserierna - level < 5 - All Around Results		- OK
+- View results, Svenska Stegserierna - level > 4 - Apparatus Results            - OK
+- View results, Svenska Stegserierna - level > 4 - All Around Results           - OK
+- View results, != Svenska Stegserierna - Apparatus Results                     - OK
+- View results, != Svenska Stegserierna - All Around Results                    - OK
+- View results, Team Competition                                                - OK
+- Refresh Competition								- Not Implemented
+
+Publish Results:
+- Publish Results, Svenska Stegserierna - level > 4 - Apparatus Results         - No ok after changing level or apparatus
+- Publish Results, Svenska Stegserierna - level > 4 - All Around Results        - No ok after changing level or apparatus
 
 Export Results:
 - Export results, Normal Competition - Apparatus Results
@@ -24,15 +29,19 @@ Export Results:
 - Export results, Team Competition
 
 Print Results
-- Print results, Normal Competition - Apparatus Results
-- Print results, Normal Competition - All Around Results
-- Print results, Team Competition
+- Print results, Normal Competition - Apparatus Results 			- OK
+- Print results, Normal Competition - All Around Results			- OK
+- Print results, Team Competition						- OK
 
 Manage Competition Gymnasts:
 - Create New Competition
 - Import Gymnasts
 - Add new Gymnast
 - Change Gymnast
+
+Other tests:
+- Basic translation test
+- Logging test
 
 Create New Competition Type:
 - Create new apparatus

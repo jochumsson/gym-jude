@@ -55,6 +55,10 @@ const IResultItemModel::ResultsMap & ResultSqlItemModel::get_current_results() c
 
 void ResultSqlItemModel::publish_results() const
 {
+    if (not m_current_competition ||
+            m_result_type_info.result_type_string == QString())
+        return;
+
     QString query_str;
     QTextStream stream(&query_str);
 
@@ -99,8 +103,7 @@ void ResultSqlItemModel::publish_results() const
 void ResultSqlItemModel::remove_publication() const
 {
     if (not m_current_competition ||
-            m_result_type_info.result_type_string == QString() ||
-            ((*m_current_competition).type == CompetitionType::SvenskaStegserierna && not m_current_level))
+            m_result_type_info.result_type_string == QString())
         return;
 
     QSqlQuery query(m_db);
@@ -131,7 +134,8 @@ void ResultSqlItemModel::remove_publication() const
 
 bool ResultSqlItemModel::is_results_published() const
 {
-    if (m_current_results.empty()) return false;
+    if (m_current_results.empty() ||
+            m_gui_state == GuiState::Uninitialized) return false;
 
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT gymnast_id FROM competition_result "
@@ -154,7 +158,8 @@ bool ResultSqlItemModel::is_results_published() const
 
 bool ResultSqlItemModel::is_published_results_up_to_date() const
 {
-    if (m_current_results.empty()) return false;
+    if (m_current_results.empty() ||
+            m_gui_state == GuiState::Uninitialized) return false;
 
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT gymnast_id, final_score FROM competition_result "
