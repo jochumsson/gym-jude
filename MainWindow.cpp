@@ -271,13 +271,17 @@ void MainWindow::export_results()
 {
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setNameFilter(tr("Participient files (*.csv)"));
+    dialog.setNameFilter(tr("Gymnastic Results CSV (*.csv)"));
     dialog.setDirectory(QDir::home());
+    dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
     const bool file_dialog_open = dialog.exec();
 
-    if (!file_dialog_open) {
+    if (!file_dialog_open ||
+            dialog.selectedFiles().empty())
+    {
         return;
     }
+
 
     QString file_name = dialog.selectedFiles()[0];
     QFile file(file_name);
@@ -294,59 +298,73 @@ void MainWindow::export_results()
     const auto & current_results = m_result_item_model->get_current_results();
 
     // print header
-    if (current_results.size() > 0)
+    auto gym_results_it = current_results.begin();
+    const auto gym_results_end = current_results.end();
+    if (gym_results_it != gym_results_end)
     {
-        auto gym_results_it = current_results.begin();
-        stream << "Name,Club";
-        if (gym_results_it->second.result_info.all_around_result)
-        {
-            stream << ",All Around Results";
-        }
+        stream << "Name,Club,Results";
 
-        Q_ASSERT(gym_results_it->second.results.size() > 0);
-        const auto & result_it = gym_results_it->second.results[0];
-        stream << result_it.result_info.result_type_string << " Result";
-
-        for (const auto & app_score_it: result_it.apparatus_score)
+        const bool export_results = (gym_results_it->second.results.size() > 1);
+        for (const auto & results_it: gym_results_it->second.results)
         {
-            stream << app_score_it.apparatus_name << ",Apparatus Score";
-            if (app_score_it.has_cop_score)
+            if (export_results)
             {
-                stream << ",E Score,D Score,D Penalty";
+                stream << "," << results_it.result_info.result_type_string;
+            }
+
+            const bool export_apparatus_score = (results_it.apparatus_score.size() > 1);
+            for (const auto & app_score_it: results_it.apparatus_score)
+            {
+                if (export_apparatus_score)
+                {
+                    stream << "," << app_score_it.apparatus_name;
+                }
+
+                if (app_score_it.has_cop_score)
+                {
+                    stream << ",D Score,D Penalty,E Score";
+                }
             }
         }
 
         stream << "\n";
     }
 
-    for (const auto & gym_results_it: current_results)
+    while (gym_results_it != gym_results_end)
     {
-        stream << gym_results_it.second.gymnast_name;
+        stream << gym_results_it->second.gymnast_name;
         stream << ",";
-        stream << gym_results_it.second.gymnast_club;
+        stream << gym_results_it->second.gymnast_club;
+        stream << ", ";
+        stream << gym_results_it->second.final_results;
 
-        if (gym_results_it.second.result_info.all_around_result)
+        const bool export_results = (gym_results_it->second.results.size() > 1);
+        for (const auto & results_it: gym_results_it->second.results)
         {
-            stream << ", ";
-            stream << gym_results_it.second.final_results;
-        }
-
-        for (const auto & result_it: gym_results_it.second.results)
-        {
-            stream << result_it.final_results;
-            for (const auto & app_score_it: result_it.apparatus_score)
+            if (export_results)
             {
-                stream <<"," << app_score_it.final_score;
+                stream << ", " << results_it.final_results;
+            }
+
+            const bool export_apparatus_score = (results_it.apparatus_score.size() > 1);
+            for (const auto & app_score_it: results_it.apparatus_score)
+            {
+                if (export_apparatus_score)
+                {
+                    stream << "," << app_score_it.final_score;
+                }
+
                 if (app_score_it.has_cop_score)
                 {
-                    stream <<"," << app_score_it.e_score;
                     stream <<"," << app_score_it.d_score;
                     stream <<"," << app_score_it.d_penalty;
+                    stream <<"," << app_score_it.e_score;
                 }
             }
         }
 
         stream << "\n";
+        ++gym_results_it;
     }
 
     file.close();
