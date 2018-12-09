@@ -289,57 +289,61 @@ void MainWindow::export_results()
     }
 
     QTextStream stream(&file);
-    bool first_line = true;
+    const auto & current_results = m_result_item_model->get_current_results();
 
-    IResultsCalculator::ResultsMap current_results;
-    try {
-        current_results = m_result_item_model->get_current_results();
-    }
-    catch(IncompleteResults & e) {
-        QMessageBox msg_box;
-        msg_box.setText(QString("Failed to export results, error: ") + e.what());
-        msg_box.setStandardButtons(QMessageBox::Ok);
-        msg_box.exec();
-        return;
-    }
-
-    for(auto result_it = current_results.begin(); result_it != current_results.end(); ++result_it)
+    // print header
+    if (current_results.size() > 0)
     {
-        if(first_line)
+        auto gym_results_it = current_results.begin();
+        stream << "Name,Club";
+        if (gym_results_it->second.result_info.all_around_result)
         {
-            stream << "Name," << "Club," << "Results";
-            for(auto app_it = result_it->second.apparatus_score.begin();
-                app_it != result_it->second.apparatus_score.end();
-                ++app_it)
+            stream << ",All Around Results";
+        }
+
+        Q_ASSERT(gym_results_it->second.results.size() > 0);
+        const auto & result_it = gym_results_it->second.results[0];
+        stream << result_it.result_info.result_type_string << " Result";
+
+        for (const auto & app_score_it: result_it.apparatus_score)
+        {
+            stream << app_score_it.apparatus_name << ",Apparatus Score";
+            if (app_score_it.has_cop_score)
             {
-                stream << "," << (*app_it).first;
-                if ((*app_it).second.has_cop_score)
+                stream << ",E Score,D Score,D Penalty";
+            }
+        }
+
+        stream << "\n";
+    }
+
+    for (const auto & gym_results_it: current_results)
+    {
+        stream << gym_results_it.second.gymnast_name;
+        stream << ",";
+        stream << gym_results_it.second.gymnast_club;
+
+        if (gym_results_it.second.result_info.all_around_result)
+        {
+            stream << ", ";
+            stream << gym_results_it.second.final_results;
+        }
+
+        for (const auto & result_it: gym_results_it.second.results)
+        {
+            stream << result_it.final_results;
+            for (const auto & app_score_it: result_it.apparatus_score)
+            {
+                stream <<"," << app_score_it.final_score;
+                if (app_score_it.has_cop_score)
                 {
-                    stream << "," << (*app_it).first + " D Score";
-                    stream << "," << (*app_it).first + " D Penalty";
+                    stream <<"," << app_score_it.e_score;
+                    stream <<"," << app_score_it.d_score;
+                    stream <<"," << app_score_it.d_penalty;
                 }
             }
-            stream << "\n";
-            first_line = false;
         }
 
-
-        stream << result_it->second.gymnast_name;
-        stream << ",";
-        stream << result_it->second.gymnast_club;
-        stream << ", ";
-        stream << result_it->second.final_results;
-        for(auto app_it = result_it->second.apparatus_score.begin();
-            app_it != result_it->second.apparatus_score.end();
-            ++app_it)
-        {
-            stream <<"," << (*app_it).second.final_score;
-            if ((*app_it).second.has_cop_score)
-            {
-                stream <<"," << (*app_it).second.d_score;
-                stream <<"," << (*app_it).second.d_penalty;
-            }
-        }
         stream << "\n";
     }
 
@@ -376,32 +380,33 @@ void MainWindow::export_team_results()
         }
 
         QTextStream stream(&file);
-        bool first_line = true;
-        for(auto result_it = current_team_results.begin(); result_it != current_team_results.end(); ++result_it)
-        {
-            if(first_line)
-            {
-                stream << "Team Name," << "Club," << "Results";
-                for(auto app_it = result_it->second.apparatus_score.begin();
-                    app_it != result_it->second.apparatus_score.end();
-                    ++app_it)
-                {
-                    stream << "," << app_it->first;
-                }
-                stream << "\n";
-                first_line = false;
-            }
 
-            stream << result_it->second.team_name.trimmed();
-            stream << ",";
-            stream << result_it->second.team_club.trimmed();
-            stream << ",";
-            stream << result_it->second.final_score;
-            for(auto app_it = result_it->second.apparatus_score.begin();
-                app_it != result_it->second.apparatus_score.end();
-                ++app_it)
+        // header
+        if(current_team_results.size() > 0)
+        {
+            auto team_res_it = current_team_results.begin();
+            stream << "Team Name" << ",Club" << ",Team Results";
+            for(auto res_it = team_res_it->second.team_results.begin();
+                res_it != team_res_it->second.team_results.end();
+                ++res_it)
             {
-                stream <<"," << app_it->second;
+                stream << "," << team_res_it->first;
+            }
+            stream << "\n";
+        }
+
+        for (const auto & team_res_it: current_team_results)
+        {
+            stream << team_res_it.second.team_name.trimmed();
+            stream << ",";
+            stream << team_res_it.second.team_club.trimmed();
+            stream << ",";
+            stream << team_res_it.second.final_score;
+            for(auto res_it = team_res_it.second.team_results.begin();
+                res_it != team_res_it.second.team_results.end();
+                ++res_it)
+            {
+                stream <<"," << res_it->second;
             }
             stream << "\n";
         }
@@ -683,9 +688,16 @@ void MainWindow::show_score_details_changed()
 
 void MainWindow::result_type_changed()
 {
+    int index = ui->results_type_comboBox->currentIndex();
+    if (index < 0)
+    {
+        // uninitialized gui
+        return;
+    }
+
     UninitializedGuiScope uninitialized_gui_scop(m_gui_state_server);
     const auto & result_type =
-            m_result_type_model->get_result_type(ui->results_type_comboBox->currentIndex());
+            m_result_type_model->get_result_type(static_cast<unsigned int>(index));
     m_result_item_model->set_result_type(result_type);
     m_result_item_model->refresh();
     update_results_tab();

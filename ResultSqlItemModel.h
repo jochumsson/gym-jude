@@ -46,7 +46,7 @@ private:
     QStandardItemModel m_model;
     Translator m_translator;
     IResultsCalculatorPtr m_results_calculator;
-    boost::optional<ResultsMap> m_current_results;
+    IResultsCalculator::ResultsMap m_current_results;
     boost::optional<CompetitionInfo> m_current_competition;
     boost::optional<int> m_current_level;
     ResultTypeInfo m_result_type_info;

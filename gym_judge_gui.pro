@@ -94,7 +94,8 @@ HEADERS  += MainWindow.h \
     gui_state_machine/IGuiStateObserver.h \
     gui_state_machine/UninitializedGuiScope.h \
     ICompetitionTypeModel.h \
-    CompetitionTypeSqlModel.h
+    CompetitionTypeSqlModel.h \
+    ResultTypeInfo.h
 
 FORMS    += MainWindow.ui \
     LoginDialog.ui \

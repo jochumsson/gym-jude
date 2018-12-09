@@ -8,13 +8,6 @@
 #include <boost/optional.hpp>
 #include <stdexcept>
 
-class IncompleteResults : public std::runtime_error
-{
-public:
-    using std::runtime_error::runtime_error;
-
-};
-
 class IResultItemModel
 {
 public:
@@ -34,16 +27,8 @@ public:
 
     virtual void set_show_score_details(bool show_score_details) = 0;
 
-    /**
-     * @brief get_current_results returns the module current results
-     * @throws IncompleteResutls
-     * @return Current results
-     */
     virtual const ResultsMap & get_current_results() const = 0;
 
-    /**
-     * @brief publish_results publishes the current results and makes it accessable by external tools
-     */
     virtual void publish_results() const = 0;
 
     virtual void remove_publication() const = 0;

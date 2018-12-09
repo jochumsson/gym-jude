@@ -11,11 +11,11 @@
 IResultsCalculator::ResultsMap ResultsSqlCalculator::calculate_results(
         const CompetitionInfo & competition_info,
         const boost::optional<int> & level,
-        const ResultTypeInfo result_type)
+        const ResultTypeInfo & result_type)
 {
     if (result_type.all_around_result)
     {
-        return calculate_all_around_results(competition_info, level);
+        return calculate_all_around_results(competition_info, level, result_type);
     }
     else
     {
@@ -29,7 +29,7 @@ ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition
 {
     // add all indevidual results to correct team results
     std::multimap< QString, TeamResults > team_results;
-    const auto & competition_level_results = calculate_all_around_results(competition_info, boost::none);
+    const auto & competition_level_results = calculate_all_around_results(competition_info, boost::none, boost::none);
     for(auto indevidual_results: competition_level_results)
     {
         if (indevidual_results.second.gymnast_team.isEmpty())
@@ -42,7 +42,7 @@ ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition
         }
 
         // gymnast team
-        const QString gymnast_team = indevidual_results.second.gymnast_team.trimmed();
+        const auto & gymnast_team = indevidual_results.second.gymnast_team.trimmed();
 
         // find team
         auto it = team_results.find(gymnast_team);
@@ -69,9 +69,9 @@ ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition
 
         for (auto & gymnast_it: team_it.second.gymnast_results)
         {
-            for (auto & score_it: gymnast_it.apparatus_score)
+            for (auto & res_it: gymnast_it.results)
             {
-                scores[score_it.first].insert(score_it.second.final_score);
+                scores[res_it.result_info.result_type_string].insert(res_it.final_results);
             }
         }
 
@@ -86,7 +86,7 @@ ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition
                 apparatus_score += *score_it;
             }
 
-            team_it.second.apparatus_score.insert(std::make_pair(apparatus_scores.first, apparatus_score));
+            team_it.second.team_results.insert(std::make_pair(apparatus_scores.first, apparatus_score));
             team_it.second.final_score += apparatus_score;
         }
     }
@@ -103,32 +103,43 @@ ResultsSqlCalculator::calculate_team_results(const CompetitionInfo & competition
 
 ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_all_around_results(
         const CompetitionInfo & competition_info,
-        const boost::optional<int> & level)
+        const boost::optional<int> & level,
+        const boost::optional<ResultTypeInfo> & result_type)
 {
-    auto results = m_result_type_model->get_all_result_types();
+    auto result_types = m_result_type_model->get_all_result_types();
 
     // get all apparatus results that should be part of the all around results
     std::map<QString, GymnastResults> all_results;
-    for (auto apparatus_result_it: results)
+    for (auto result_types_it: result_types)
     {
-        if (apparatus_result_it.include_in_all_around)
+        if (result_types_it.include_in_all_around)
         {
-            auto apparatus_results = calculate_apparatus_results(competition_info, level, apparatus_result_it);
-            for(auto apparatus_result_it: apparatus_results)
+            auto gymnast_results = calculate_results(competition_info, level, result_types_it);
+            for(auto gymnast_result_it: gymnast_results)
             {
-                auto & all_results_item = all_results[apparatus_result_it.second.gymnast_id];
-                if (all_results_item.gymnast_id != apparatus_result_it.second.gymnast_id)
+                auto & all_results_item = all_results[gymnast_result_it.second.gymnast_id];
+                if (all_results_item.gymnast_id != gymnast_result_it.second.gymnast_id)
                 {
-                    all_results_item.gymnast_name = apparatus_result_it.second.gymnast_name;
-                    all_results_item.gymnast_id = apparatus_result_it.second.gymnast_id;
-                    all_results_item.gymnast_club = apparatus_result_it.second.gymnast_club;
-                    all_results_item.gymnast_team = apparatus_result_it.second.gymnast_team;
+                    all_results_item.gymnast_name = gymnast_result_it.second.gymnast_name;
+                    all_results_item.gymnast_id = gymnast_result_it.second.gymnast_id;
+                    all_results_item.gymnast_club = gymnast_result_it.second.gymnast_club;
+                    all_results_item.gymnast_team = gymnast_result_it.second.gymnast_team;
+                    if (result_type)
+                    {
+                        all_results_item.result_info = *result_type;
+                    }
+                    else
+                    {
+                        all_results_item.result_info = {"", false, true, false};
+                    }
                 }
 
-                all_results_item.apparatus_score.insert(
-                            apparatus_result_it.second.apparatus_score.begin(),
-                            apparatus_result_it.second.apparatus_score.end());
-                all_results_item.final_results += apparatus_result_it.second.final_results;
+
+                for (const auto & res_it: gymnast_result_it.second.results)
+                {
+                    all_results_item.results.push_back(res_it);
+                    all_results_item.final_results += res_it.final_results;
+                }
             }
         }
     }
@@ -145,7 +156,7 @@ ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_all_around_resu
 ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_results(
         const CompetitionInfo & competition_info,
         const boost::optional<int> & level,
-        const ResultTypeInfo result_type)
+        const ResultTypeInfo & result_type)
 {
     ResultsMap results_map;
 
@@ -176,6 +187,7 @@ ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_resul
         gymnast_results.gymnast_id = gymnast_query.record().field(1).value().toString().trimmed();
         gymnast_results.gymnast_club = gymnast_query.record().field(2).value().toString().trimmed();
         gymnast_results.gymnast_team = gymnast_query.record().field(3).value().toString().trimmed();
+        gymnast_results.result_info = result_type;
 
         QSqlQuery gymnast_score_query;
         gymnast_score_query.prepare("SELECT apparatus, final_score, d_score, d_penalty, base_score FROM competition_score_cop_view "
@@ -187,6 +199,8 @@ ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_resul
         gymnast_score_query.bindValue(":result_type_bind_value", result_type.result_type_string);
         gymnast_score_query.exec();
 
+        Results apparatus_results;
+        apparatus_results.result_info = result_type;;
         while(gymnast_score_query.next())
         {
             const QString & apparatus = gymnast_score_query.record().field(0).value().toString();
@@ -197,17 +211,19 @@ ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_resul
                 const double d_score = gymnast_score_query.record().field(2).value().toDouble();
                 const double d_penalty = gymnast_score_query.record().field(3).value().toDouble();
                 const double e_score = final_score - (d_score - d_penalty);
-                gymnast_results.apparatus_score[apparatus] = {final_score, true, d_score, d_penalty, e_score};
+                apparatus_results.apparatus_score.push_back({apparatus, final_score, true, d_score, d_penalty, e_score});
             }
             else
             {
-                gymnast_results.apparatus_score[apparatus] = {final_score, false, 0.0, 0.0, 0.0};
+                apparatus_results.apparatus_score.push_back({apparatus, final_score, false, 0.0, 0.0, 0.0});
             }
 
-            gymnast_results.final_results += final_score;
+            apparatus_results.final_results += final_score;
         }
 
-        gymnast_results.final_results = gymnast_results.final_results / gymnast_score_query.size();
+        apparatus_results.final_results = apparatus_results.final_results / gymnast_score_query.size();
+        gymnast_results.results.push_back(apparatus_results);
+        gymnast_results.final_results = apparatus_results.final_results;
         results_map.insert(std::make_pair(gymnast_results.final_results, gymnast_results));
     }
 

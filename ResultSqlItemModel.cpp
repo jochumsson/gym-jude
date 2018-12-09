@@ -50,11 +50,7 @@ void ResultSqlItemModel::set_show_score_details(bool show_score_details)
 
 const IResultItemModel::ResultsMap & ResultSqlItemModel::get_current_results() const
 {
-    if (not m_current_results) {
-        throw IncompleteResults("results have not been calculated");
-    }
-
-    return *m_current_results;
+    return m_current_results;
 }
 
 void ResultSqlItemModel::publish_results() const
@@ -62,12 +58,12 @@ void ResultSqlItemModel::publish_results() const
     QString query_str;
     QTextStream stream(&query_str);
 
-    if (m_current_results && not (*m_current_results).empty())
+    if (not m_current_results.empty())
     {
         stream << "REPLACE INTO competition_result VALUES";
         int pos = 0;
         double previous_results = 0.0;
-        for (const auto & result: *m_current_results)
+        for (const auto & gym_result_it: m_current_results)
         {
             if (pos != 0)
             {
@@ -76,10 +72,10 @@ void ResultSqlItemModel::publish_results() const
             }
 
             if (pos == 0 ||
-                    not is_equal(result.second.final_results, previous_results))
+                    not is_equal(gym_result_it.second.final_results, previous_results))
             {
                 ++pos;
-                previous_results = result.second.final_results;
+                previous_results = gym_result_it.second.final_results;
             }
 
             stream << "("
@@ -87,8 +83,8 @@ void ResultSqlItemModel::publish_results() const
                    << "\"" << m_result_type_info.result_type_string << "\","
                    << get_sql_level_value() << ","
                    << pos << ","
-                   << "\"" << result.second.gymnast_id << "\","
-                   << result.second.final_results
+                   << "\"" << gym_result_it.second.gymnast_id << "\","
+                   << gym_result_it.second.final_results
                    << ")";
         }
 
@@ -135,7 +131,7 @@ void ResultSqlItemModel::remove_publication() const
 
 bool ResultSqlItemModel::is_results_published() const
 {
-    if (not m_current_results) return false;
+    if (m_current_results.empty()) return false;
 
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT gymnast_id FROM competition_result "
@@ -158,7 +154,7 @@ bool ResultSqlItemModel::is_results_published() const
 
 bool ResultSqlItemModel::is_published_results_up_to_date() const
 {
-    if (not m_current_results) return false;
+    if (m_current_results.empty()) return false;
 
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT gymnast_id, final_score FROM competition_result "
@@ -177,7 +173,7 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
         return false;
     }
 
-    if (static_cast<unsigned int>(sql_query.size()) != (*m_current_results).size())
+    if (static_cast<unsigned int>(sql_query.size()) != m_current_results.size())
     {
         return false;
     }
@@ -188,11 +184,11 @@ bool ResultSqlItemModel::is_published_results_up_to_date() const
 
         const QString & gymnast_id = record.field(0).value().toString();
         auto it = std::find_if(
-                    (*m_current_results).begin(),
-                    (*m_current_results).end(),
+                    m_current_results.begin(),
+                    m_current_results.end(),
                     [gymnast_id](auto res_it){return res_it.second.gymnast_id == gymnast_id;});
 
-        if (it == (*m_current_results).end())
+        if (it == m_current_results.end())
         {
             return false;
         }
@@ -222,23 +218,43 @@ void ResultSqlItemModel::update_results()
                 m_current_level,
                 m_result_type_info);
     m_model.clear();
-    for (ResultsMap::iterator it = (*m_current_results).begin(); it != (*m_current_results).end(); ++it)
+
+    auto gymnast_results_it = m_current_results.begin();
+    auto gymnast_results_end = m_current_results.end();
+
+    if (gymnast_results_it != gymnast_results_end)
     {
-        if (m_model.columnCount() < 2)
+        int index = 0;
+        m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Name")));
+        m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Club")));
+        if ((*m_current_competition).team_competition)
         {
-            int index = 0;
-            m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Name")));
-            m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Club")));
-            if ((*m_current_competition).team_competition)
+            m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Team")));
+        }
+
+        // add column for all around results
+        m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Results")));
+
+        const bool include_results_column = (gymnast_results_it->second.results.size() > 1);
+        for (auto results_it: gymnast_results_it->second.results)
+        {
+            if (include_results_column)
             {
-                m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Team")));
-            }
-            m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Results")));
-            for (auto score: it->second.apparatus_score)
-            {
-                const QString & translated_header = m_translator.translate(score.first);
+                // add results if more then one apparatus is are involved
+                const QString & translated_header = m_translator.translate(results_it.result_info.result_type_string);
                 m_model.setHorizontalHeaderItem(index++, new QStandardItem(translated_header));
-                if (m_show_score_details && score.second.has_cop_score)
+            }
+
+            const bool include_apparatus_column = (results_it.apparatus_score.size() > 1);
+            for (auto apparatus_score_it: results_it.apparatus_score)
+            {
+                if (include_apparatus_column)
+                {
+                    const QString & translated_header = m_translator.translate(apparatus_score_it.apparatus_name);
+                    m_model.setHorizontalHeaderItem(index++, new QStandardItem(translated_header));
+                }
+
+                if (m_show_score_details && apparatus_score_it.has_cop_score)
                 {
                     m_model.setHorizontalHeaderItem(index++, new QStandardItem("D"));
                     m_model.setHorizontalHeaderItem(index++, new QStandardItem("-"));
@@ -246,69 +262,87 @@ void ResultSqlItemModel::update_results()
                 }
             }
         }
+    }
 
+    while (gymnast_results_it != gymnast_results_end)
+    {
         QList< QStandardItem* > row;
 
         {
-            QStandardItem * name_item = new QStandardItem(it->second.gymnast_name);
+            QStandardItem * name_item = new QStandardItem(gymnast_results_it->second.gymnast_name);
             name_item->setEditable(false);
             row.append(name_item);
         }
 
         {
-            QStandardItem * club_item = new QStandardItem(it->second.gymnast_club);
+            QStandardItem * club_item = new QStandardItem(gymnast_results_it->second.gymnast_club);
             club_item->setEditable(false);
             row.append(club_item);
         }
 
         if ((*m_current_competition).team_competition)
         {
-            QStandardItem * team_item = new QStandardItem(it->second.gymnast_team);
+            QStandardItem * team_item = new QStandardItem(gymnast_results_it->second.gymnast_team);
             team_item->setEditable(false);
             row.append(team_item);
         }
 
         {
             QStandardItem * results_item = new QStandardItem;
-            results_item->setData(it->second.final_results, Qt::EditRole);
+            results_item->setData(gymnast_results_it->second.final_results, Qt::EditRole);
             results_item->setEditable(false);
             row.append(results_item);
         }
 
-        foreach(auto score_it, it->second.apparatus_score)
+        const bool include_results_column = (gymnast_results_it->second.results.size() > 1);
+        for (auto results_it: gymnast_results_it->second.results)
         {
+            if (include_results_column)
             {
-                QStandardItem * score_item = new QStandardItem;
-                score_item->setData(score_it.second.final_score, Qt::EditRole);
-                score_item->setEditable(false);
-                row.append(score_item);
+                QStandardItem * results_item = new QStandardItem;
+                results_item->setData(results_it.final_results, Qt::EditRole);
+                results_item->setEditable(false);
+                row.append(results_item);
             }
 
-            if (m_show_score_details && score_it.second.has_cop_score)
+            const bool include_apparatus_column = (results_it.apparatus_score.size() > 1);
+            for (auto apparatus_score_it: results_it.apparatus_score)
             {
+                if (include_apparatus_column)
                 {
-                    QStandardItem * d_score_item = new QStandardItem;
-                    d_score_item->setData(score_it.second.d_score, Qt::EditRole);
-                    d_score_item->setEditable(false);
-                    row.append(d_score_item);
-                }
-                {
-                    QStandardItem * d_penalty_item = new QStandardItem;
-                    d_penalty_item->setData(score_it.second.d_penalty, Qt::EditRole);
-                    d_penalty_item->setEditable(false);
-                    row.append(d_penalty_item);
-                }
-                {
-                    QStandardItem * e_score_item = new QStandardItem;
-                    e_score_item->setData(score_it.second.e_score, Qt::EditRole);
-                    e_score_item->setEditable(false);
-                    row.append(e_score_item);
+                    QStandardItem * score_item = new QStandardItem;
+                    score_item->setData(apparatus_score_it.final_score, Qt::EditRole);
+                    score_item->setEditable(false);
+                    row.append(score_item);
                 }
 
+                if (m_show_score_details && apparatus_score_it.has_cop_score)
+                {
+                    {
+                        QStandardItem * d_score_item = new QStandardItem;
+                        d_score_item->setData(apparatus_score_it.d_score, Qt::EditRole);
+                        d_score_item->setEditable(false);
+                        row.append(d_score_item);
+                    }
+                    {
+                        QStandardItem * d_penalty_item = new QStandardItem;
+                        d_penalty_item->setData(apparatus_score_it.d_penalty, Qt::EditRole);
+                        d_penalty_item->setEditable(false);
+                        row.append(d_penalty_item);
+                    }
+                    {
+                        QStandardItem * e_score_item = new QStandardItem;
+                        e_score_item->setData(apparatus_score_it.e_score, Qt::EditRole);
+                        e_score_item->setEditable(false);
+                        row.append(e_score_item);
+                    }
+
+                }
             }
         }
 
         m_model.appendRow(row);
+        ++gymnast_results_it;
     }
 }
 

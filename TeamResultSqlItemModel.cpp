@@ -57,7 +57,7 @@ void TeamResultSqlItemModel::update_results()
             m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Team Name")));
             m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Team Club")));
             m_model.setHorizontalHeaderItem(index++, new QStandardItem(QObject::tr("Final Score")));
-            for (auto & apparatus_score_it: team_results_it.second.apparatus_score)
+            for (auto & apparatus_score_it: team_results_it.second.team_results)
             {
                 const QString & translated_header = m_translator.translate(apparatus_score_it.first);
                 m_model.setHorizontalHeaderItem(index++, new QStandardItem(translated_header));
@@ -85,7 +85,7 @@ void TeamResultSqlItemModel::update_results()
             row.append(results_item);
         }
 
-        for (auto & apparatus_score_it: team_results_it.second.apparatus_score)
+        for (auto & apparatus_score_it: team_results_it.second.team_results)
         {
             QStandardItem * results_item = new QStandardItem;
             results_item->setData(apparatus_score_it.second, Qt::EditRole);
