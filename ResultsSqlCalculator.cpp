@@ -210,7 +210,8 @@ ResultsSqlCalculator::ResultsMap ResultsSqlCalculator::calculate_apparatus_resul
             {
                 const double d_score = gymnast_score_query.record().field(2).value().toDouble();
                 const double d_penalty = gymnast_score_query.record().field(3).value().toDouble();
-                const double e_score = final_score - (d_score - d_penalty);
+                const double base_score = gymnast_score_query.record().field(4).value().toDouble();
+                const double e_score = base_score + d_score - d_penalty - final_score;
                 apparatus_results.apparatus_score.push_back({apparatus, final_score, true, d_score, d_penalty, e_score});
             }
             else
