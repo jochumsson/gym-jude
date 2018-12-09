@@ -37,7 +37,7 @@ void ImportGymnastsDialog::readCsvFile()
     QFileDialog dialog(this);
 
     QStringList filters;
-    filters << "Participient files (*.csv)";
+    filters << "Participient files (.CSV) (*.csv)";
     dialog.setNameFilters(filters);
 
     dialog.setFileMode(QFileDialog::ExistingFile);

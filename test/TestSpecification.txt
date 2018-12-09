@@ -17,31 +17,32 @@ View Results:
 - View results, != Svenska Stegserierna - Apparatus Results                     - OK
 - View results, != Svenska Stegserierna - All Around Results                    - OK
 - View results, Team Competition                                                - OK
-- Refresh Competition								- Not Implemented
+- Refresh Competition								- Not implemented
 
 Publish Results:
-- Publish Results, Svenska Stegserierna - level > 4 - Apparatus Results         - No ok after changing level or apparatus
-- Publish Results, Svenska Stegserierna - level > 4 - All Around Results        - No ok after changing level or apparatus
+- Publish Results, Svenska Stegserierna - level > 4 - Apparatus Results         - OK
+- Publish Results, Svenska Stegserierna - level > 4 - All Around Results        - OK
 
 Export Results:
-- Export results, Normal Competition - Apparatus Results
-- Export results, Normal Competition - All Around Results
-- Export results, Team Competition
+- Export results, Normal Competition - Apparatus Results                        - OK
+- Export results, Normal Competition - All Around Results                       - OK
+- Export results, Team Competition                                              - OK
 
 Print Results
 - Print results, Normal Competition - Apparatus Results 			- OK
 - Print results, Normal Competition - All Around Results			- OK
-- Print results, Team Competition						- OK
+- Print results, Team Competition						- Needs to be tested on windows
 
 Manage Competition Gymnasts:
-- Create New Competition
-- Import Gymnasts
-- Add new Gymnast
-- Change Gymnast
+- Create New Competition                                                        - OK
+- Import Gymnasts                                                               - OK
+- Add new Gymnast                                                               - OK
+- Change Gymnast                                                                - OK
 
 Other tests:
 - Basic translation test
 - Logging test
+- HTML side test
 
 Create New Competition Type:
 - Create new apparatus
