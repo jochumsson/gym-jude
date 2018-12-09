@@ -1,0 +1,46 @@
+Functional Tests:
+
+Calculate Score:
+- Calculate Score, Svenska Stegserierna - level < 5 - Apparatus Results
+- Calculate Score, Svenska Stegserierna - level < 5 - All Around Results
+- Calculate Score, Svenska Stegserierna - level > 4 - Apparatus Results
+- Calculate Score, Svenska Stegserierna - level > 4 - All Around Results
+- Calculate Score, != Svenska Stegserierna - Apparatus Results
+- Calculate Score, != Svenska Stegserierna - All Around Results
+- Calculate Score, Team Competition
+
+View Results:
+- View results, Svenska Stegserierna - level < 5 - Apparatus Results
+- View results, Svenska Stegserierna - level < 5 - All Around Results
+- View results, Svenska Stegserierna - level > 4 - Apparatus Results
+- View results, Svenska Stegserierna - level > 4 - All Around Results
+- View results, != Svenska Stegserierna - Apparatus Results
+- View results, != Svenska Stegserierna - All Around Results
+- View results, Team Competition
+
+Export Results:
+- Export results, Normal Competition - Apparatus Results
+- Export results, Normal Competition - All Around Results
+- Export results, Team Competition
+
+Print Results
+- Print results, Normal Competition - Apparatus Results
+- Print results, Normal Competition - All Around Results
+- Print results, Team Competition
+
+Manage Competition Gymnasts:
+- Create New Competition
+- Import Gymnasts
+- Add new Gymnast
+- Change Gymnast
+
+Create New Competition Type:
+- Create new apparatus
+- Create new apparatus result
+- Create new all around result
+- Create new competition type
+- Associate competition type with result types
+
+
+
+
