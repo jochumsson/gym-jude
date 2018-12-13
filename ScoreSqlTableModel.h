@@ -57,7 +57,7 @@ private:
             const double d_value,
             const EValueSet & e_values,
             const double d_penalty);
-    QString get_score_sql_query(const CompetitionType competition_type);
+    QString get_score_sql_query(const CompetitionType & competition_type);
     void init_score_sql_query();
     void set_column_info();
     double get_score_from_record(const QSqlRecord & record, ScoreField score_field) const;

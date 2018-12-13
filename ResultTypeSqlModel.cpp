@@ -17,15 +17,9 @@ QAbstractTableModel * ResultTypeSqlModel::get_qt_model()
 
 void ResultTypeSqlModel::refresh()
 {
-    if (m_selected_competition_info.type == CompetitionType::Unknown)
-    {
-        // the model has not been initialized with a competition type
-        return;
-    }
-
     QSqlQuery sql_query(m_db);
     sql_query.prepare("SELECT result_type, all_around_result, apparatus_result, include_in_all_around FROM competition_type_result WHERE competition_type=:competition_type_bind_value");
-    sql_query.bindValue(":competition_type_bind_value", competitionTypeToStr(m_selected_competition_info.type));
+    sql_query.bindValue(":competition_type_bind_value", m_selected_competition_info.competition_type.name);
 
     if (not sql_query.exec())
     {

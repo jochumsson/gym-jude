@@ -107,7 +107,7 @@ void ResultSqlItemModel::remove_publication() const
         return;
 
     QSqlQuery query(m_db);
-    if ((*m_current_competition).type == CompetitionType::SvenskaStegserierna)
+    if ((*m_current_competition).competition_type.has_level)
     {
         query.prepare("DELETE FROM competition_result "
                       "WHERE competition_name=:competition_name_bind_value "

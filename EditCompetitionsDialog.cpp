@@ -68,7 +68,7 @@ void EditCompetitionsDialog::set_selection(const CompetitionInfo & competition_d
 {
     ui->competitionNameLineEdit->setText(competition_data.name);
     ui->competitionDateLineEdit->setDate(competition_data.date);
-    ui->competitionTypeComboBox->setCurrentText(competitionTypeToStr(competition_data.type));
+    ui->competitionTypeComboBox->setCurrentText(competition_data.competition_type.name);
     ui->teamCompetitionCheckBox->setChecked(competition_data.team_competition);
     ui->closedCheckBox->setChecked(competition_data.closed);
 }
@@ -78,7 +78,7 @@ void EditCompetitionsDialog::add_competition()
     QString error;
     const bool add_ok =
             m_competition_table_model->add_competition(
-                {"New Competition Name", QDate::currentDate(), CompetitionType::SvenskaStegserierna, false, false},
+                {"New Competition Name", QDate::currentDate(), ui->competitionTypeComboBox->currentText(), false, false},
                 error);
     if (not add_ok)
     {
@@ -115,7 +115,7 @@ void EditCompetitionsDialog::apply_changes()
     CompetitionInfo competition_info = {
         ui->competitionNameLineEdit->text(),
         ui->competitionDateLineEdit->date(),
-        strToCompetitionType(ui->competitionTypeComboBox->currentText()),
+        ui->competitionTypeComboBox->currentText(),
         ui->teamCompetitionCheckBox->isChecked(),
         ui->closedCheckBox->isChecked()};
 

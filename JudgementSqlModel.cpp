@@ -41,7 +41,7 @@ void JudgementSqlModel::update(const JudgementInfo & judgement_info)
 {
     if (not m_selected_competition ||
             m_selected_apparatus.isEmpty() ||
-            ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna && m_selected_level < 0 ))
+            ((*m_selected_competition).competition_type.has_level && m_selected_level < 0 ))
     {
         throw IncompleteSelectionError();
     }
@@ -78,7 +78,7 @@ void JudgementSqlModel::update_current_judgement_info()
 {
     if (not m_selected_competition ||
             m_selected_apparatus.isEmpty() ||
-            ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna && m_selected_level < 0 ))
+            ((*m_selected_competition).competition_type.has_level && m_selected_level < 0 ))
     {
         // incomplete selection
         return;
@@ -86,7 +86,7 @@ void JudgementSqlModel::update_current_judgement_info()
 
     QSqlQuery query(m_db);
 
-    if ((*m_selected_competition).type == CompetitionType::SvenskaStegserierna)
+    if ((*m_selected_competition).competition_type.has_level)
     {
         query.prepare("SELECT judge_number, judge_id_1, judge_id_2, judge_id_3, judge_id_4 "
                       "FROM competition_judgement WHERE "
@@ -132,7 +132,7 @@ void JudgementSqlModel::update_current_judgement_info()
             "judge_id_4",
         };
 
-        for (int index = 0; index < (int)judge_fields.size(); ++index)
+        for (int index = 0; index < static_cast<int>(judge_fields.size()); ++index)
         {
             const QString & value =
                     (index < judgement_info.number_of_judges)

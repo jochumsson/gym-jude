@@ -201,7 +201,7 @@ void EditGymnastsDialog::reinitialize()
     m_gymnast_model->set_competition(competition_info.name);
     clear_gymnast_selection();
 
-    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    if (competition_info.competition_type.has_level)
     {
         ui->filterByLevelCheckBox->show();
         ui->levelComboBox->show();

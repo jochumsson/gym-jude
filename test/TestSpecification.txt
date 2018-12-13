@@ -1,8 +1,8 @@
 Functional Tests:
 
 Calculate Score:
-- Calculate Score, Svenska Stegserierna - level < 5 - Apparatus Results		- OK
-- Calculate Score, Svenska Stegserierna - level < 5 - All Around Results	- OK
+- Calculate Score, Svenska Stegserierna - level < 5 - Apparatus Results		- Needs to be tested, show right gymnast with respect to level and non level
+- Calculate Score, Svenska Stegserierna - level < 5 - All Around Results	- Needs to be tested, show right gymnast with respect to level and non level KK
 - Calculate Score, Svenska Stegserierna - level > 4 - Apparatus Results		- OK
 - Calculate Score, Svenska Stegserierna - level > 4 - All Around Results	- OK
 - Calculate Score, != Svenska Stegserierna - Apparatus Results                  - OK
@@ -10,8 +10,8 @@ Calculate Score:
 - Calculate Score, Team Competition                                             - OK
 
 View Results:
-- View results, Svenska Stegserierna - level < 5 - Apparatus Results		- OK
-- View results, Svenska Stegserierna - level < 5 - All Around Results		- OK
+- View results, Svenska Stegserierna - level < 5 - Apparatus Results		- Needs to be tested, show right gymnast with respect to level and non level
+- View results, Svenska Stegserierna - level < 5 - All Around Results		- Needs to be tested, show right gymnast with respect to level and non level  
 - View results, Svenska Stegserierna - level > 4 - Apparatus Results            - OK
 - View results, Svenska Stegserierna - level > 4 - All Around Results           - OK
 - View results, != Svenska Stegserierna - Apparatus Results                     - OK
@@ -20,7 +20,7 @@ View Results:
 - Refresh Competition								- Not implemented
 
 Publish Results:
-- Publish Results, Svenska Stegserierna - level > 4 - Apparatus Results         - OK
+- Publish Results, Svenska Stegserierna - level > 4 - Apparatus Results         - Needs to be teste with respect to level
 - Publish Results, Svenska Stegserierna - level > 4 - All Around Results        - OK
 
 Export Results:
@@ -29,15 +29,15 @@ Export Results:
 - Export results, Team Competition                                              - OK
 
 Print Results
-- Print results, Normal Competition - Apparatus Results 			- OK
+- Print results, Normal Competition - Apparatus Results 			- Needs to be tested with level
 - Print results, Normal Competition - All Around Results			- OK
 - Print results, Team Competition						- Needs to be tested on windows
 
 Manage Competition Gymnasts:
-- Create New Competition                                                        - OK
+- Create New Competition                                                        - Needs to be tested
 - Import Gymnasts                                                               - OK
 - Add new Gymnast                                                               - OK
-- Change Gymnast                                                                - OK
+- Change Gymnast                                                                - Need to be tested (with focus on level <> 4 and 5), filter by level
 
 Other tests:
 - Basic translation test

@@ -237,7 +237,7 @@ void MainWindow::print_results()
     }
 
     boost::optional<QString> level;
-    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    if (competition_info.competition_type.has_level)
     {
         level = ui->results_level_combo_box->currentText();
     }
@@ -498,7 +498,7 @@ void MainWindow::competition_changed()
     }
 
     // show hide level guid
-    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    if (competition_info.competition_type.has_level)
     {
         // show level gui
         ui->level_label->show();
@@ -540,10 +540,14 @@ void MainWindow::competition_changed()
     m_raw_data_model->refresh();
 
     m_apparatus_table_model->set_competition(competition_info);
+    m_apparatus_table_model->refresh();
+    ui->apparatus_combo_box->setCurrentIndex(0);
+
     m_raw_data_model->refresh();
 
     m_result_type_model->set_competition(competition_info);
     m_result_type_model->refresh();
+    ui->results_type_comboBox->setCurrentIndex(0);
 
     // update the enabled state when all selections have taken place
     init_enabled_state();
@@ -674,7 +678,7 @@ void MainWindow::results_level_changed()
     }
 
     boost::optional<int> level = boost::none;
-    if (competition_info.type == CompetitionType::SvenskaStegserierna)
+    if (competition_info.competition_type.has_level)
     {
         const QString & level_str = ui->results_level_combo_box->currentText();
         bool int_ok = false;
@@ -861,7 +865,7 @@ void MainWindow::update_judge_gui()
         return;
     }
 
-    if (competition_info.type == CompetitionType::SvenskaStegserierna &&
+    if (competition_info.competition_type.has_level &&
             ui->level_combo_box->currentText().toInt() < 5) // two judges for level 1-4
     {
         ui->three_judges_check_box->hide();
