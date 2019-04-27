@@ -6,8 +6,8 @@
 struct CompetitionType
 {
     QString name;
-    bool has_level = false;
-    bool has_all_around = true;
+    bool has_level;
+    bool has_all_around;
 };
 
 struct CompetitionInfo

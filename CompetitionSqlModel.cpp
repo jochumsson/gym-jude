@@ -4,6 +4,7 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QDebug>
 
 CompetitionSqlModel::CompetitionSqlModel(QSqlDatabase & db):
     m_db(db)
@@ -62,7 +63,7 @@ bool CompetitionSqlModel::update_competition(const CompetitionInfo & competition
     }
 
     QSqlQuery query;
-    query.prepare("UPDATE competition set competition_name=:competition_name_bind_value, competition_date=:competition_date_bind_value, competition_type=:competition_type_bind_value ,team_competition=:team_competition_bind_value, closed=:closed_bind_value WHERE competition_name=:old_competition_name_bind_value");
+    query.prepare("UPDATE competition set competition_name=:competition_name_bind_value, competition_date=:competition_date_bind_value, competition_type=:competition_type_bind_value, team_competition=:team_competition_bind_value, closed=:closed_bind_value WHERE competition_name=:old_competition_name_bind_value");
     query.bindValue(":competition_name_bind_value", competition_info.name);
     query.bindValue(":competition_date_bind_value", competition_info.date);
     query.bindValue(":competition_type_bind_value", competition_info.competition_type.name);
@@ -72,10 +73,11 @@ bool CompetitionSqlModel::update_competition(const CompetitionInfo & competition
 
     if (query.exec())
     {
-        m_current_competition_info = m_current_competition_info;
+        m_current_competition_info = competition_info;
     }
     else
     {
+        qWarning() << "Sql query failed: " << query.lastQuery();
         error_str = query.lastError().text();
         return false;
     }

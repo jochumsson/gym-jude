@@ -57,9 +57,10 @@ QString CompetitionSqlTableModel::get_competition_name(int index) const
 bool CompetitionSqlTableModel::add_competition(const CompetitionInfo & competition_info, QString & sql_error_str)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO competition(competition_name, competition_date, team_competition, closed) VALUES(:competition_name_bind_value, :competition_date_bind_value, :team_competition_bind_value, :closed_bind_value)");
+    query.prepare("INSERT INTO competition(competition_name, competition_date, competition_type, team_competition, closed) VALUES(:competition_name_bind_value, :competition_date_bind_value, :competition_type_bind_value, :team_competition_bind_value, :closed_bind_value)");
     query.bindValue(":competition_name_bind_value", competition_info.name);
     query.bindValue(":competition_date_bind_value", competition_info.date.toString("yyyy-MM-dd"));
+    query.bindValue(":competition_type_bind_value", competition_info.competition_type.name);
     query.bindValue(":team_competition_bind_value", competition_info.team_competition);
     query.bindValue(":closed_bind_value", false);
 

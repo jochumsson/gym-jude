@@ -34,6 +34,10 @@ void EditCompetitionsDialog::showEvent(QShowEvent *e)
 {
     m_competition_table_model->refresh();
     m_competition_type_model->refresh();
+    if (ui->competitionTypeComboBox->count() > 0)
+    {
+        ui->competitionTypeComboBox->setCurrentIndex(0);
+    }
     QDialog::showEvent(e);
 }
 
@@ -78,7 +82,11 @@ void EditCompetitionsDialog::add_competition()
     QString error;
     const bool add_ok =
             m_competition_table_model->add_competition(
-                {"New Competition Name", QDate::currentDate(), ui->competitionTypeComboBox->currentText(), false, false},
+    CompetitionInfo{"New Competition Name",
+                    QDate::currentDate(),
+                    CompetitionType{ui->competitionTypeComboBox->currentText(), false, false},
+                    false,
+                    false},
                 error);
     if (not add_ok)
     {
@@ -115,7 +123,7 @@ void EditCompetitionsDialog::apply_changes()
     CompetitionInfo competition_info = {
         ui->competitionNameLineEdit->text(),
         ui->competitionDateLineEdit->date(),
-        ui->competitionTypeComboBox->currentText(),
+        CompetitionType{ui->competitionTypeComboBox->currentText()},
         ui->teamCompetitionCheckBox->isChecked(),
         ui->closedCheckBox->isChecked()};
 
