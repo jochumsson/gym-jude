@@ -54,7 +54,13 @@ bool CompetitionSqlModel::get_competition_info(CompetitionInfo & competition_inf
     return false;
 }
 
-bool CompetitionSqlModel::update_competition(const CompetitionInfo & competition_info, QString & error_str)
+bool CompetitionSqlModel::update_competition(
+        const QString & competition_name,
+        const QDate & competition_date,
+        const QString & competition_type,
+        bool team_competition,
+        bool closed,
+        QString & error_str)
 {
     if (!m_current_competition_info)
     {
@@ -64,21 +70,24 @@ bool CompetitionSqlModel::update_competition(const CompetitionInfo & competition
 
     QSqlQuery query;
     query.prepare("UPDATE competition set competition_name=:competition_name_bind_value, competition_date=:competition_date_bind_value, competition_type=:competition_type_bind_value, team_competition=:team_competition_bind_value, closed=:closed_bind_value WHERE competition_name=:old_competition_name_bind_value");
-    query.bindValue(":competition_name_bind_value", competition_info.name);
-    query.bindValue(":competition_date_bind_value", competition_info.date);
-    query.bindValue(":competition_type_bind_value", competition_info.competition_type.name);
-    query.bindValue(":team_competition_bind_value", competition_info.team_competition);
-    query.bindValue(":closed_bind_value", competition_info.closed);
+    query.bindValue(":competition_name_bind_value", competition_name);
+    query.bindValue(":competition_date_bind_value", competition_date);
+    query.bindValue(":competition_type_bind_value", competition_type);
+    query.bindValue(":team_competition_bind_value", team_competition);
+    query.bindValue(":closed_bind_value", closed);
     query.bindValue(":old_competition_name_bind_value", (*m_current_competition_info).name);
 
-    if (query.exec())
-    {
-        m_current_competition_info = competition_info;
-    }
-    else
+    if (!query.exec())
     {
         qWarning() << "Sql query failed: " << query.lastQuery();
         error_str = query.lastError().text();
+        return false;
+    }
+
+    QString refresh_error_string;
+    if (!set_competition(competition_name, refresh_error_string))
+    {
+        qWarning() << "Failed to set CompetitionSqlModel to competition with name " << competition_name;
         return false;
     }
 

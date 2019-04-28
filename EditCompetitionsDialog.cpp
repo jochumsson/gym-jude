@@ -120,15 +120,14 @@ void EditCompetitionsDialog::delete_competition()
 
 void EditCompetitionsDialog::apply_changes()
 {
-    CompetitionInfo competition_info = {
-        ui->competitionNameLineEdit->text(),
-        ui->competitionDateLineEdit->date(),
-        CompetitionType{ui->competitionTypeComboBox->currentText()},
-        ui->teamCompetitionCheckBox->isChecked(),
-        ui->closedCheckBox->isChecked()};
+    const QString & competition_name = ui->competitionNameLineEdit->text();
+    const QDate & competition_date = ui->competitionDateLineEdit->date();
+    const QString & competition_type = ui->competitionTypeComboBox->currentText();
+    const bool team_competition = ui->teamCompetitionCheckBox->isChecked();
+    const bool closed = ui->closedCheckBox->isChecked();
 
     QString error_str;
-    if (m_competition_model->update_competition(competition_info, error_str))
+    if (m_competition_model->update_competition(competition_name, competition_date, competition_type, team_competition, closed, error_str))
     {
         m_competition_table_model->refresh();
     }
