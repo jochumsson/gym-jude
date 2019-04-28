@@ -20,7 +20,7 @@ QWidget *ScoreItemDelegate::createEditor(
     Q_UNUSED(index);
     auto * editor = new QLineEdit(parent);
 
-    const QRegExp reg_exp("(?:|(?:\\d{1,2})(?:[.,]\\d{1,2})?)");//(?)");
+    const QRegExp reg_exp("(?:|(?:\\d{1,2})(?:[.]\\d{1,2})?)");//(?)");
     Q_ASSERT(reg_exp.isValid());
 
     auto * validator = new QRegExpValidator(reg_exp, editor);
