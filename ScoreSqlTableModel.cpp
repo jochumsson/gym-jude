@@ -337,7 +337,15 @@ double ScoreSqlTableModel::calculate_final_score_level_five_and_higher(
         throw std::runtime_error("Invalid number of E deductions");
     }
 
-    return base + d_value - e_deduction - d_penalty;
+    if (d_value == 0.0 && e_deduction == 0.0 && d_penalty == 0.0)
+    {
+        // used for invalid tries
+        return 0;
+    }
+    else
+    {
+        return base + d_value - e_deduction - d_penalty;
+    }
 }
 
 QString ScoreSqlTableModel::get_score_sql_query(const CompetitionType & competition_type)
