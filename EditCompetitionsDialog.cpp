@@ -16,13 +16,17 @@ EditCompetitionsDialog::EditCompetitionsDialog(
 {
     ui->setupUi(this);
     ui->competitionsListView->setModel(m_competition_table_model->get_qt_model());
-    ui->competitionTypeComboBox->setModel(m_competition_type_model->get_qt_model());
+    ui->competitionTypeComboBox->setModel(m_competition_type_model->get_qt_model());    
 
     connect(ui->closePushButton, SIGNAL(clicked(bool)), SLOT(accept()));
     connect(ui->competitionsListView, SIGNAL(clicked(QModelIndex)), SLOT(competition_selected(QModelIndex)));
     connect(ui->addCompetitionPushButton, SIGNAL(clicked(bool)), SLOT(add_competition()));
     connect(ui->deleteCompetitionPushButton, SIGNAL(clicked(bool)), SLOT(delete_competition()));
     connect(ui->applyPushButton, SIGNAL(clicked(bool)), SLOT(apply_changes()));
+
+    connect(ui->competitionsListView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            SLOT(competition_selected(QModelIndex, QModelIndex)));
+
 }
 
 EditCompetitionsDialog::~EditCompetitionsDialog()
@@ -39,6 +43,12 @@ void EditCompetitionsDialog::showEvent(QShowEvent *e)
         ui->competitionTypeComboBox->setCurrentIndex(0);
     }
     QDialog::showEvent(e);
+}
+
+void EditCompetitionsDialog::competition_selected(const QModelIndex & row_index, const QModelIndex & column_index)
+{
+    Q_UNUSED(column_index);
+    competition_selected(row_index);
 }
 
 void EditCompetitionsDialog::competition_selected(const QModelIndex & index)
@@ -79,10 +89,12 @@ void EditCompetitionsDialog::set_selection(const CompetitionInfo & competition_d
 
 void EditCompetitionsDialog::add_competition()
 {
+    const QString default_new_competition_name = "New Competition Name";
+
     QString error;
     const bool add_ok =
             m_competition_table_model->add_competition(
-    CompetitionInfo{"New Competition Name",
+    CompetitionInfo{default_new_competition_name,
                     QDate::currentDate(),
                     CompetitionType{ui->competitionTypeComboBox->currentText(), false, false},
                     false,
@@ -91,6 +103,20 @@ void EditCompetitionsDialog::add_competition()
     if (not add_ok)
     {
         qWarning() << "Failed to create new competition, error: " << error;
+    }
+    else
+    {
+        // select the new competition
+        auto new_competition_index = m_competition_table_model->get_competition_index(default_new_competition_name);
+        if (new_competition_index)
+        {
+            QModelIndex model_index = m_competition_table_model->get_qt_model()->index(*new_competition_index, 0);
+            ui->competitionsListView->setCurrentIndex(model_index);
+        }
+        else
+        {
+            qWarning() << "New competition not found in competition model for selection";
+        }
     }
 }
 
@@ -103,6 +129,8 @@ void EditCompetitionsDialog::delete_competition()
     }
     else
     {
+        QModelIndex current_index = ui->competitionsListView->currentIndex();
+
         QString error;
         if (not m_competition_table_model->delete_competition(competition_info.name, error))
         {
@@ -114,6 +142,20 @@ void EditCompetitionsDialog::delete_competition()
                         "Notice that all gymnasts need to be deleted from the competition before it can be deleted.\n"
                         "SQL error: " + error);
 
+        }
+        else
+        {
+            // update selection
+            QModelIndex next_index = m_competition_table_model->get_qt_model()->index(current_index.row(), 0);
+            if (next_index.isValid())
+            {
+                ui->competitionsListView->setCurrentIndex(next_index);
+            }
+            else
+            {
+                next_index =  m_competition_table_model->get_qt_model()->index(0, 0);
+                ui->competitionsListView->setCurrentIndex(next_index);
+            }
         }
     }
 }

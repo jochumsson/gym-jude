@@ -25,6 +25,7 @@ protected:
     void showEvent(QShowEvent *e) final;
 
 private slots:
+    void competition_selected(const QModelIndex & row_index,const QModelIndex & column_index);
     void competition_selected(const QModelIndex & index);
     void add_competition();
     void delete_competition();

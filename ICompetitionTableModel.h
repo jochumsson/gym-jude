@@ -4,7 +4,7 @@
 #include <QAbstractTableModel>
 #include <QDate>
 #include <memory>
-
+#include <boost/optional.hpp>
 
 class ICompetitionTableModel
 {
@@ -20,6 +20,7 @@ public:
     virtual bool add_competition(const CompetitionInfo & competition_info, QString & error_str) = 0;
     virtual bool delete_competition(const QString & competition_name, QString & error_str) = 0;
 
+    virtual boost::optional<int> get_competition_index(const QString & competition_name) = 0;
 };
 
 using ICompetitionTableModelPtr = std::shared_ptr<ICompetitionTableModel>;

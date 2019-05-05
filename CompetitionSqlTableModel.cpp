@@ -1,5 +1,7 @@
 #include "CompetitionSqlTableModel.h"
 #include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlField>
 #include <QSqlError>
 
 CompetitionSqlTableModel::CompetitionSqlTableModel(QSqlDatabase & db):
@@ -98,3 +100,21 @@ bool CompetitionSqlTableModel::delete_competition(
     return return_value;
 }
 
+boost::optional<int> CompetitionSqlTableModel::get_competition_index(const QString & competition_name)
+{
+    boost::optional<int> competition_index;
+
+    for (int index = 0; index < m_sql_model.rowCount(); ++index)
+    {
+        QSqlRecord record = m_sql_model.record(index);
+        QSqlField field = record.field(0);
+        if (field.isValid() &&
+                field.value().toString() == competition_name)
+        {
+            competition_index = index;
+            break;
+        }
+    }
+
+    return competition_index;
+}
