@@ -114,7 +114,7 @@ bool GymnastSqlTableModel::add_gymnast(const GymnastInfo & gymnast_info, QString
         return false;
     }
 
-    for (auto apparatus_name: get_apparatus_list("WAG"))
+    for (auto apparatus_name: get_apparatus_list())
     {
         if (not add_gymnast(apparatus_name, gymnast_info, error_log))
         {
@@ -185,10 +185,9 @@ bool GymnastSqlTableModel::add_gymnast(const QString & apparatus,
     return true;
 }
 
-std::vector<QString> GymnastSqlTableModel::get_apparatus_list(const QString & competition_type)
+std::vector<QString> GymnastSqlTableModel::get_apparatus_list()
 {
-    // for now we have only one type of competition for Juniors Women's artistic gymnastics (WAG)
-    Q_UNUSED(competition_type);
+    // for now we return all apparatus types regardless of competition type
 
     std::vector<QString> apparatus_list;
     QSqlQuery apparatus_query;
