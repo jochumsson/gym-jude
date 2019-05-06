@@ -29,7 +29,7 @@ private:
         {"Jump 1", QObject::tr("Jump 1")},
         {"Jump 2", QObject::tr("Jump 2")},
         {"Uneven Bars", QObject::tr("Uneven Bars")},
-        {"WAG All Arround", QObject::tr("WAG All Arround")},
+        {"All Around", QObject::tr("All Around")},
         {"Name", QObject::tr("Name")},
         {"Apparatus", QObject::tr("Apparatus")},
         {"Competition", QObject::tr("Competition")},

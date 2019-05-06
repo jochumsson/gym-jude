@@ -39,6 +39,9 @@ std::unique_ptr<QWidget> PrintUtility::create_results_header(
     print_header_label->setMargin(page_margin_x);
     print_header_label->setFont({"Arial", 18, QFont::Bold});
     print_header_label->setStyleSheet("QLabel { background-color : white;}");
+    print_header_label->setFrameStyle(QFrame::NoFrame);
+    print_header_label->setLineWidth(0);
+    print_header_label->setMidLineWidth(0);
     QString header_text = competition_name;
 
     if (level)
@@ -69,15 +72,15 @@ void PrintUtility::print_results_table(
     printTableView.setModel(results_item_model);
     printTableView.resizeColumnsToContents();
 
-    double width = printTableView.verticalHeader()->width();
-    double height = printTableView.horizontalHeader()->height();
     const int columns = results_item_model->columnCount();
     const int rows = results_item_model->rowCount();
 
+    double width = printTableView.verticalHeader()->width();
     for(int i = 0; i < columns; ++i) {
         width += printTableView.columnWidth(i);
     }
 
+    double height = printTableView.horizontalHeader()->height();
     for(int i = 0; i < rows; ++i) {
         height += printTableView.rowHeight(i);
     }
@@ -88,10 +91,11 @@ void PrintUtility::print_results_table(
     printTableView.setFixedSize(width, height);
 
     //scale with respect to width
+    const auto page_rect = printer.pageRect();
     double scale = 1;
-    if (width > printer.pageRect().width())
+    if (width > page_rect.width() - (page_margin_x * 2))
     {
-        scale = double(printer.pageRect().width()) / width;
+        scale = double(page_rect.width() - (page_margin_x * 2)) / width;
         painter.scale(scale, scale);
     }
 
@@ -103,9 +107,8 @@ void PrintUtility::print_results_table(
         // print the header
         header->render(&painter, {page_margin_x, page_margin_y});
 
-        const double page_height = printer.pageRect().height();
         while(printed_rows < rows &&
-              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_height - (page_margin_y + header->height() + page_margin_y))
+              (printTableView.rowHeight(printed_rows) + print_to_pos - print_from_pos) * scale < page_rect.height() - (page_margin_y + header->height() + page_margin_y))
         {
             print_to_pos += printTableView.rowHeight(printed_rows);
             ++printed_rows;
@@ -116,7 +119,7 @@ void PrintUtility::print_results_table(
                     &painter,
                     QPoint(page_margin_x, page_margin_y + header->height()),
                     QRegion(0, print_from_pos, width, print_to_pos-print_from_pos));
-        print_from_pos += print_to_pos;
+        print_from_pos = print_to_pos;
     }
     while (printed_rows < rows && printer.newPage());
     painter.end();

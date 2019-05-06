@@ -34,32 +34,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="121"/>
-        <source>Svenska Stegserierna</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="EditCompetitionsDialog.ui" line="126"/>
-        <source>Svenska Pokalenserierna</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="EditCompetitionsDialog.ui" line="136"/>
         <source>Team Competition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="143"/>
+        <location filename="EditCompetitionsDialog.ui" line="133"/>
         <source>Closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="178"/>
+        <location filename="EditCompetitionsDialog.ui" line="168"/>
         <source>Apply Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditCompetitionsDialog.ui" line="185"/>
+        <location filename="EditCompetitionsDialog.ui" line="175"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,12 +117,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="307"/>
+        <location filename="EditGymnastsDialog.ui" line="311"/>
         <source>Apply Changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="EditGymnastsDialog.ui" line="317"/>
+        <location filename="EditGymnastsDialog.ui" line="321"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -147,6 +137,67 @@
     <message>
         <location filename="FindGymnastDialog.ui" line="22"/>
         <source>Gymnast Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImportGymnastsDialog</name>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="29"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Import data from comma (, or ;) separated file. Expected data values are Gymnast Name, Gymnast Club, Level, Start Number and Team Name (if any)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="32"/>
+        <source>Read CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="39"/>
+        <source>Import Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="46"/>
+        <source>Clear Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.ui" line="66"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImportedGymnastTableModel</name>
+    <message>
+        <location filename="ImportGymnastsDialog.h" line="120"/>
+        <source>Name</source>
+        <translation type="unfinished">Namn</translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.h" line="122"/>
+        <source>Club</source>
+        <translation type="unfinished">Klubb</translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.h" line="124"/>
+        <source>Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.h" line="126"/>
+        <source>Start Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ImportGymnastsDialog.h" line="128"/>
+        <source>Team Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -327,14 +378,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="280"/>
-        <location filename="MainWindow.cpp" line="361"/>
-        <source>Participient files (*.csv)</source>
+        <location filename="MainWindow.cpp" line="272"/>
+        <source>Gymnastic Results CSV (*.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="842"/>
-        <source>Print Results</source>
+        <location filename="MainWindow.cpp" line="375"/>
+        <source>Gymnastic Team Results CSV (*.csv)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -392,54 +442,69 @@
     </message>
     <message>
         <location filename="Translator.h" line="32"/>
-        <source>WAG All Arround</source>
-        <translation>Mångkamp Damer</translation>
+        <source>All Around</source>
+        <translation>Mångkamp</translation>
     </message>
     <message>
         <location filename="Translator.h" line="34"/>
         <source>Apparatus</source>
-        <translation type="unfinished">Redskap</translation>
+        <translation>Redskap</translation>
     </message>
     <message>
         <location filename="Translator.h" line="35"/>
         <source>Competition</source>
-        <translation type="unfinished">Tävling</translation>
+        <translation>Tävling</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="234"/>
+        <location filename="ResultSqlItemModel.cpp" line="233"/>
         <location filename="Translator.h" line="33"/>
         <source>Name</source>
         <translation>Namn</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="235"/>
+        <location filename="ResultSqlItemModel.cpp" line="234"/>
         <location filename="Translator.h" line="36"/>
         <source>Club</source>
         <translation>Klubb</translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="238"/>
+        <location filename="ResultSqlItemModel.cpp" line="237"/>
         <source>Team</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ResultSqlItemModel.cpp" line="240"/>
+        <location filename="ResultSqlItemModel.cpp" line="241"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="60"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="57"/>
         <source>Team Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="61"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="58"/>
         <source>Team Club</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="TeamResultSqlItemModel.cpp" line="62"/>
+        <location filename="TeamResultSqlItemModel.cpp" line="59"/>
         <source>Final Score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="CompetitionTypeSqlModel.cpp" line="18"/>
+        <source>Competition Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PrintUtility.cpp" line="16"/>
+        <source>Print Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PrintUtility.cpp" line="50"/>
+        <source>Level</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

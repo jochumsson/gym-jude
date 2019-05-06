@@ -19,6 +19,7 @@ bool CompetitionSqlModel::set_competition(const QString & competition_name, QStr
 
     if (not query.exec())
     {
+        qWarning() << "Invalid SQL: " << query.lastQuery();
         sql_error_str += query.lastError().text();
         m_current_competition_info = boost::none;
         return false;
