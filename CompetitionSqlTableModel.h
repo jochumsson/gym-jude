@@ -21,6 +21,8 @@ public:
     bool add_competition(const CompetitionInfo & competition_info, QString & sql_error_str) final;
     bool delete_competition(const QString & competition_name, QString & sql_error_str) final;
 
+    boost::optional<int> get_competition_index(const QString & competition_name) final;
+
 private:
     QSqlDatabase & m_db;
     QSqlQueryModel m_sql_model;

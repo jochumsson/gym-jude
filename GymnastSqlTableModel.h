@@ -29,7 +29,7 @@ private:
             const QString & apparatus,
             const GymnastInfo & gymnast_info,
             QString & error_log);
-    std::vector<QString> get_apparatus_list(const QString & competition_type);
+    std::vector<QString> get_apparatus_list();
 
     QSqlDatabase & m_db;
     QSqlQueryModel m_sql_model;
