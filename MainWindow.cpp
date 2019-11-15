@@ -521,7 +521,7 @@ void MainWindow::competition_changed()
     m_gymnast_table_model->set_competition(selected_competition);
     m_gymnast_table_model->refresh();
 
-    m_level_table_model->set_competition(selected_competition);
+    m_level_table_model->set_competition(competition_info);
     m_level_table_model->refresh();
     ui->level_combo_box->setCurrentIndex(0);
     ui->results_level_combo_box->setCurrentIndex(0);
@@ -659,10 +659,11 @@ void MainWindow::score_level_changed()
     const QString & level_str = ui->level_combo_box->currentText();
     if (level_str.isEmpty()) return; // invalid selection
 
-    bool int_ok = false;
-    const int level = level_str.toInt(&int_ok);
-    if (not int_ok) return; // invalid data
+//    bool int_ok = false;
+//    const int level = level_str.toInt(&int_ok);
+//    if (not int_ok) return; // invalid data
 
+    const int level = m_level_table_model->get_level(level_str);
     m_judgement_model->set_level(level);
     m_score_table_model->set_level(level);
     update_score_tab();
@@ -681,18 +682,19 @@ void MainWindow::results_level_changed()
     if (competition_info.competition_type.has_level)
     {
         const QString & level_str = ui->results_level_combo_box->currentText();
-        bool int_ok = false;
-        const int level_selection = level_str.toInt(&int_ok);
-        if (int_ok)
-        {
-            level = level_selection;
-        }
-        else
-        {
+        level = m_level_table_model->get_level(level_str);
+        // bool int_ok = false;
+        // const int level_selection = level_str.toInt(&int_ok);
+        // if (int_ok)
+        // {
+        //    level = level_selection;
+        // }
+        // else
+        //{
             // model updated but no selection in gui
             // wait for gui selection before updating other models
-            return;
-        }
+        //    return;
+        //}
     }
 
     // avoid multiple updates
@@ -865,8 +867,10 @@ void MainWindow::update_judge_gui()
         return;
     }
 
+    const int level = m_level_table_model->get_level(
+                ui->level_combo_box->currentText());
     if (competition_info.competition_type.has_level &&
-            ui->level_combo_box->currentText().toInt() < 5) // two judges for level 1-4
+            level < 5) // two judges for level 1-4
     {
         ui->three_judges_check_box->hide();
         ui->judge_3_combo_box->hide();

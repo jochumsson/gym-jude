@@ -391,12 +391,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="CompetitionSqlTableModel.cpp" line="28"/>
+        <location filename="CompetitionSqlTableModel.cpp" line="30"/>
         <source>Competition Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CompetitionSqlTableModel.cpp" line="29"/>
+        <location filename="CompetitionSqlTableModel.cpp" line="31"/>
         <source>Competition Date</source>
         <translation type="unfinished"></translation>
     </message>

@@ -77,7 +77,11 @@ void EditGymnastsDialog::init_level_combo_box(bool enabled)
 void EditGymnastsDialog::init_gymnast_table_model(bool filter_by_level)
 {
     m_gymnast_table_model->set_filter_by_level(filter_by_level);
-    m_gymnast_table_model->set_level(ui->levelComboBox->currentText().toInt());
+
+    QString level_str = ui->levelComboBox->currentText();
+    int level = m_level_table_model->get_level(level_str);
+
+    m_gymnast_table_model->set_level(level);
     m_gymnast_table_model->refresh();    
 }
 
@@ -192,7 +196,7 @@ void EditGymnastsDialog::reinitialize()
         return;
     }
 
-    m_level_table_model->set_competition(competition_info.name);
+    m_level_table_model->set_competition(competition_info);
     init_level_combo_box();
 
     m_gymnast_table_model->set_competition(competition_info.name);
